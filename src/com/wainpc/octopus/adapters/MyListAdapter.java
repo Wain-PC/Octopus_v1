@@ -5,9 +5,6 @@ import java.util.HashMap;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,29 +12,39 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.wainpc.octopus.R;
+import com.wainpc.octopus.core.models.Series;
 
 
 public class MyListAdapter extends BaseAdapter  {
 
 	    private Activity activity;
 	    private ArrayList<HashMap<String, String>> data;
-	    private static LayoutInflater inflater=null;
+	    private LayoutInflater inflater=null;
 		private static final String tag = "myLogs";
-		private ImageLoader him;
+		private static ImageLoader him;
 		private Context context;
 	
 
-	    public MyListAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
+	    public MyListAdapter(Activity a, ImageLoader im, ArrayList<HashMap<String, String>> d) {
 	        activity = a;
 	        data=d;
 	        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	        context = activity.getApplicationContext();
-    		him = ImageLoader.getInstance();
-    		him.init(ImageLoaderConfiguration.createDefault(context));
-	        
+	        him = im;
+	    }
+	    
+	    public MyListAdapter(Activity a, ImageLoader im, Series s) {
+	        activity = a;
+	        //get list of episodes from series
+	        data = s.getListArrayOfEpisodes();
+	        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	        context = activity.getApplicationContext();
+    		him = im;     
 	    }
 
 	    public int getCount() {
@@ -64,11 +71,11 @@ public class MyListAdapter extends BaseAdapter  {
 	        HashMap<String, String> map = new HashMap<String, String>();
 	        map = data.get(position);
 	      
-	        title.setText(map.get("title"));	       
-	      //Uri url = Uri.parse(map.get("image"));
+	        title.setText(map.get("title"));
+	        him.displayImage(map.get("posterURL"), image);
 	      
 	        return vi;
-	}	  	
+	}
 }
 
 

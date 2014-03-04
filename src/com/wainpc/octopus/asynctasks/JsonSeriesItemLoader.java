@@ -1,18 +1,16 @@
 package com.wainpc.octopus.asynctasks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.wainpc.octopus.interfaces.AsyncResponse;
+import com.wainpc.octopus.core.models.Series;
+import com.wainpc.octopus.interfaces.AsyncSeriesItemResponse;
 import com.wainpc.octopus.modules.HttpLoader;
 import com.wainpc.octopus.modules.JsonParser;
 
 
-public class JsonLoader extends AsyncTask<String, String, String> {	
-	public AsyncResponse delegate=null;
+public class JsonSeriesItemLoader extends AsyncTask<String, String, String> {	
+	public AsyncSeriesItemResponse delegate=null;
 	public static String tag = "myLogs";
 	
 	@Override
@@ -24,7 +22,7 @@ public class JsonLoader extends AsyncTask<String, String, String> {
 	@Override
 	protected void onPostExecute(String result) {
 		super.onPostExecute(result);
-		ArrayList<HashMap<String, String>> seriesList = JsonParser.parse(result);
-		delegate.success(seriesList);
+		Series series = JsonParser.parseSeries(result);
+		delegate.onLoadSeriesSuccess(series);
 	}
 }
