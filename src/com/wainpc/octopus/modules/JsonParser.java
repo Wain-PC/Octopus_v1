@@ -40,6 +40,7 @@ public class JsonParser {
 						jObj = (JSONObject) posters.get(0);
 						posterURL = (String) jObj.get("url");
 						map.put("posterURL", posterURL);
+						Log.d("tag","!!!!!!!!!!!!!!!!!"+posterURL);
 					}
 					map.put("id",
 							(String) Long.toString((Long) jsonSeries.get("id")));

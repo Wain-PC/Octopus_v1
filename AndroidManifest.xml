@@ -23,6 +23,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data android:name="android.app.default_searchable"
+                android:value=".SearchActivity"
+                />
         </activity>
         <activity
             android:name="com.wainpc.octopus.activities.SeriesActivity"
@@ -31,6 +34,7 @@
             android:name="android.support.PARENT_ACTIVITY"
             android:value="com.wainpc.octopus.activities.MainActivity" />
         </activity>
+        <activity android:name="com.wainpc.octopus.activities.SearchActivity"></activity>
     </application>
 
 </manifest>

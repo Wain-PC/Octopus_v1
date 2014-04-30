@@ -2,14 +2,14 @@ package com.wainpc.octopus.modules;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Scanner;
 
 import android.util.Log;
-
-import com.wainpc.octopus.modules.JsonParser;
 
 public class HttpLoader {
 	
@@ -50,4 +50,25 @@ public class HttpLoader {
 		Scanner scanner = new Scanner(is, encoding).useDelimiter("\\A");
 		return scanner.hasNext() ? scanner.next() : "";
 	}
+	
+	
+	public static String encodeURIComponent(String component)   {     
+		String result = null;      
+		
+		try {       
+			result = URLEncoder.encode(component, "UTF-8")   
+				   .replaceAll("\\%28", "(")                          
+				   .replaceAll("\\%29", ")")   		
+				   .replaceAll("\\+", "%20")                          
+				   .replaceAll("\\%27", "'")   			   
+				   .replaceAll("\\%21", "!")
+				   .replaceAll("\\%7E", "~"); 
+		}
+		catch (UnsupportedEncodingException e) {       
+			result = component;     
+		}      
+		
+		return result;   
+	} 
+	
 }

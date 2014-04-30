@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,6 +31,7 @@ import com.wainpc.octopus.R;
 import com.wainpc.octopus.adapters.MyListAdapter;
 import com.wainpc.octopus.asynctasks.JsonSeriesListLoader;
 import com.wainpc.octopus.interfaces.AsyncSeriesListResponse;
+import com.wainpc.octopus.modules.LocalDataBase;
 
 
 //Activity---------------------------------------------------------------------
@@ -41,12 +43,13 @@ public class MainActivity extends FragmentActivity implements AsyncSeriesListRes
 	public JsonSeriesListLoader loader = new JsonSeriesListLoader();
 	public static String tag = "myLogs";
 	private static ImageLoader him;
+	public static LocalDataBase localDB;
 	
 	public static ArrayList<HashMap<String, String>> seriesList = new ArrayList<HashMap<String, String>>();
 	public HashMap<String, String> map;
-	public String rootURL = "http://192.168.1.104:1337/api/latest?json=1";
+	public String rootURL = "http://192.168.1.106:1337/api/latest?json=1";
 	
-	//success handler on
+	//success handler on 
 	public void onLoadItemsSuccess(ArrayList<HashMap<String, String>> data) {
 		Log.d(tag,"Got data!"+data.size());
 		seriesList = data;
@@ -63,6 +66,9 @@ public class MainActivity extends FragmentActivity implements AsyncSeriesListRes
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		localDB = new LocalDataBase(this);
+		Log.d(tag,"data base is created " +localDB);
 		
 		//initialize ImageLoader
 		him = ImageLoader.getInstance();
@@ -86,6 +92,7 @@ public class MainActivity extends FragmentActivity implements AsyncSeriesListRes
 		Log.d(tag,"make async request");
 		loader.execute(rootURL);
 		loader.delegate = this;
+		
 
 	}
 
@@ -147,7 +154,7 @@ public class MainActivity extends FragmentActivity implements AsyncSeriesListRes
 			rootView = inflater.inflate(R.layout.fragment_list,
 					container, false);			
 			listViewFragmentMain = (ListView) rootView.findViewById(R.id.listView_fragment_main);
-			
+			 
 			listAdapter = new MyListAdapter(getActivity(),him,seriesList);
 			listViewFragmentMain.setAdapter(listAdapter);
 			
@@ -157,6 +164,17 @@ public class MainActivity extends FragmentActivity implements AsyncSeriesListRes
 						int position, long id) {
 					String seriesId = seriesList.get(position).get("id").toString();
 					String seriesTitle = seriesList.get(position).get("title").toString();
+					
+					//add to db 
+				/*	SQLiteDatabase db = localDB.getWritableDatabase();
+					ContentValues newValues = new ContentValues();
+				    newValues.put("SERIES_ID", seriesId);
+					newValues.put("SERIES_NAME", seriesTitle);
+					long rowID =db.insert("bookmark", null, newValues);
+					Log.d(tag,"db_id "+rowID);
+					////////////////// 
+					*/
+					
 					//open series page
 					Intent seriesPage = new Intent(getActivity().getApplicationContext(),SeriesActivity.class);
 					seriesPage.putExtra("id", seriesId);
