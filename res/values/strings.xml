@@ -4,6 +4,8 @@
     <string name="app_name">Octopus</string>
     <string name="action_settings">Настройки</string>
     <string name="title_latest">Последние добавленные</string>
+    <string name="title_alphabet">По алфавиту</string>
+   
     <string name="title_series_info">Сериал</string>
     <string name="title_series_episodes">Эпизоды</string>
     <string name="action_search">Поиск</string>

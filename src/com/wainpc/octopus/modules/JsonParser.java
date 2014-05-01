@@ -108,7 +108,7 @@ public class JsonParser {
 		Integer i, j, k;
 		String epTitle;
 		JSONArray jSeason, jEpisode, jVideo;
-		JSONObject jObj, jS, jE, jV;
+		JSONObject  jS, jE, jV;
 		
 		// getting season
 					jSeason = (JSONArray) jsonSeries.get("season");

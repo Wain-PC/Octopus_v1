@@ -1,6 +1,8 @@
 package com.wainpc.octopus.adapters;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import android.app.Activity;
@@ -12,10 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.wainpc.octopus.R;
 import com.wainpc.octopus.core.models.Series;
 
@@ -74,8 +73,13 @@ public class MyListAdapter extends BaseAdapter  {
 	        title.setText(map.get("title"));
 	        him.displayImage(map.get("posterURL"), image);
 	      
+	        
+	         
 	        return vi;
 	}
+	
+	
+	
 }
 
 

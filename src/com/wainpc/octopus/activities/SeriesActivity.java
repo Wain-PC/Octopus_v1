@@ -201,6 +201,7 @@ public class SeriesActivity extends FragmentActivity implements
 
 			listAdapter = new MyListAdapter(getActivity(), him, series);
 			listViewFragmentMain.setAdapter(listAdapter);
+			
 
 			listViewFragmentMain
 					.setOnItemClickListener(new OnItemClickListener() {

@@ -17,7 +17,7 @@ public class JsonSeriesListLoader extends AsyncTask<String, String, String> {
 	
 	@Override
 	protected String doInBackground(String... inputURL) {
-		Log.d(tag,"Sending request");
+		Log.d(tag,"Sending request"); 
 		return HttpLoader.sendQuery(inputURL);
 	}
 	
