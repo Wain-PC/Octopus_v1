@@ -115,9 +115,20 @@ public class JsonParser {
 					//iterating over Seasons
 					for (i = 0; i < jSeason.size(); i++) {
 						jS = (JSONObject) jSeason.get(i);
+						
+						//first, let's add season divider to the list
+						map = new HashMap<String, String>();
+						map.put("type", "se");
+						map.put("title", "Сезон "+(String) jS.get("number").toString());
+						map.put("seasonNumber", (String) jS.get("number").toString());
+						map.put("episodeNumber", "-1");
+						episodeList.add(map);
+						
 						jEpisode = (JSONArray) jS.get("episode");
 						//iterating over Episodes in a season
 						for(j=0;j<jEpisode.size();j++) {
+							
+							//now let's parse episodes
 							map = new HashMap<String, String>();
 							jE = (JSONObject) jEpisode.get(j);
 							epTitle = (String) jE.get("title");
@@ -126,6 +137,8 @@ public class JsonParser {
 							map.put("episodeNumber", (String) jE.get("number").toString());
 							map.put("title", epTitle);
 							map.put("posterURL", (String) jE.get("thumbnail"));
+							//type is "episode"
+							map.put("type", "ep");
 							
 							jVideo = (JSONArray) jE.get("video");
 							for(k=0;k<jVideo.size();k++) {
