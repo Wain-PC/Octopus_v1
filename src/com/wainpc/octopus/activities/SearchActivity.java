@@ -14,12 +14,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.wainpc.octopus.R;
-import com.wainpc.octopus.adapters.MyListAdapter;
+import com.wainpc.octopus.adapters.SeriesListAdapter;
 import com.wainpc.octopus.asynctasks.JsonSeriesListLoader;
 import com.wainpc.octopus.interfaces.AsyncSeriesListResponse;
 import com.wainpc.octopus.modules.HttpLoader;
@@ -42,23 +39,6 @@ public class SearchActivity extends Activity implements AsyncSeriesListResponse 
 
 		him = ImageLoader.getInstance();
 
-		DisplayImageOptions himOptions = new DisplayImageOptions.Builder()
-				.cacheInMemory(true)
-				.cacheOnDisc(true)
-				// @TODO: move this to settings
-				.showImageForEmptyUri(R.drawable.ic_launcher)
-				.showImageOnLoading(R.drawable.ic_launcher)
-				.showImageOnFail(R.drawable.ic_launcher).build();
-		ImageLoaderConfiguration himConfig = new ImageLoaderConfiguration.Builder(
-				getBaseContext()).defaultDisplayImageOptions(himOptions)
-				.memoryCache(new LruMemoryCache(10 * 1024 * 1024)) // @TODO:
-																	// move this
-																	// to
-																	// settings
-				.build();
-
-		him.init(himConfig);
-
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			// String query=intent.getExtras().getString("query");
 			String query = intent.getStringExtra(SearchManager.QUERY);
@@ -73,12 +53,12 @@ public class SearchActivity extends Activity implements AsyncSeriesListResponse 
 	@Override
 	public void onLoadItemsSuccess(ArrayList<HashMap<String, String>> out) {
 		
-		MyListAdapter listAdapter;
+		SeriesListAdapter listAdapter;
 		ListView listViewFragmentMain = (ListView) findViewById(R.id.listView_fragment_main);
 		
 		seriesList=out;
 
-		listAdapter = new MyListAdapter(this, him, seriesList);
+		listAdapter = new SeriesListAdapter(this, him, seriesList);
 		listViewFragmentMain.setAdapter(listAdapter);
 
 		listViewFragmentMain.setOnItemClickListener(new OnItemClickListener() {

@@ -10,4 +10,16 @@
     <string name="title_series_episodes">Эпизоды</string>
     <string name="action_search">Поиск</string>
     <string name="search_hint">Введите название сериала</string>
+    <string name="loading">Загрузка</string>
+    
+    <string name="pref_category">Основные</string>
+    <string name="pref_domain_title">Адрес сервера</string>
+    <string name="pref_domain_summary">Адрес, по которому находятся данные</string>
+    
+    <string name="pref_domain_value">192.168.1.106:1337</string>
+    
+        <string name="pref_api_latest_value">/api/latest?json=1</string>
+        
+    
+    
 </resources>

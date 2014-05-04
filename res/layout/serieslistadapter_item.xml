@@ -28,7 +28,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="15dp"
         android:layout_toRightOf="@+id/linearLayout1"
-        android:text="Medium Text"
+        android:textIsSelectable="false"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

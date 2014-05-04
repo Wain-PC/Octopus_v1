@@ -2,6 +2,7 @@ package com.wainpc.octopus.activities;
 
 import java.util.Locale;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,12 +23,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.wainpc.octopus.R;
-import com.wainpc.octopus.adapters.MyListAdapter;
+import com.wainpc.octopus.adapters.SeriesListAdapter;
 import com.wainpc.octopus.asynctasks.JsonSeriesItemLoader;
 import com.wainpc.octopus.asynctasks.RightUrlVideoLoader;
 import com.wainpc.octopus.core.models.Series;
@@ -40,7 +38,7 @@ public class SeriesActivity extends FragmentActivity implements
 	public SectionsPagerAdapter spAdapter;
 	public ViewPager viewPager;
 	public JsonSeriesItemLoader loader = new JsonSeriesItemLoader();
-	public static RightUrlVideoLoader urlLoader = new RightUrlVideoLoader();// static???????
+	public static RightUrlVideoLoader urlLoader;// static???????
 	public static String tag = "myLogs";
 	public static Series series;
 	public String seriesId;
@@ -48,6 +46,7 @@ public class SeriesActivity extends FragmentActivity implements
 	public String rootURL = "http://192.168.1.106:1337/api/series/";
 	public static String urlVideo = "http://192.168.1.106:1337/api/getdirectlink?url=";
 	private static ImageLoader him;
+	public static ProgressDialog progress;
 
 	// do something when series is loaded!
 	public void onLoadSeriesSuccess(Series s) {
@@ -56,13 +55,17 @@ public class SeriesActivity extends FragmentActivity implements
 
 		// Set up the ViewPager with the sections adapter.
 		viewPager = (ViewPager) findViewById(R.id.pager_series);
-		Log.d(tag, spAdapter.toString());
+		
+		View loading = findViewById(R.id.loading);
+		loading.setVisibility(View.GONE);
+		
 		viewPager.setAdapter(spAdapter);
 	}
 
 	public void onGetRightUrlVideo(String str) {
 		// open series page
 		Log.d(tag, "str===" + str);
+		progress.dismiss();
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setDataAndType(Uri.parse(str), "video/*");
 		startActivity(Intent.createChooser(intent, "Complete action using"));
@@ -79,25 +82,10 @@ public class SeriesActivity extends FragmentActivity implements
 		setTitle(seriesTitle);
 		loader.execute(rootURL + seriesId + "?json=1");
 		loader.delegate = this;
+		
+		progress = new ProgressDialog(this);
 
 		him = ImageLoader.getInstance();
-
-		DisplayImageOptions himOptions = new DisplayImageOptions.Builder()
-				.cacheInMemory(true)
-				.cacheOnDisc(true)
-				// @TODO: move this to settings
-				.showImageForEmptyUri(R.drawable.ic_launcher)
-				.showImageOnLoading(R.drawable.ic_launcher)
-				.showImageOnFail(R.drawable.ic_launcher).build();
-		ImageLoaderConfiguration himConfig = new ImageLoaderConfiguration.Builder(
-				getBaseContext()).defaultDisplayImageOptions(himOptions)
-				.memoryCache(new LruMemoryCache(10 * 1024 * 1024)) // @TODO:
-																	// move this
-																	// to
-																	// settings
-				.build();
-
-		him.init(himConfig);
 	}
 
 	@Override
@@ -182,7 +170,7 @@ public class SeriesActivity extends FragmentActivity implements
 
 	public static class EpisodeListFragment extends Fragment {
 
-		public MyListAdapter listAdapter;
+		public SeriesListAdapter listAdapter;
 		View rootView;
 		ListView listViewFragmentMain;
 
@@ -199,7 +187,7 @@ public class SeriesActivity extends FragmentActivity implements
 			listViewFragmentMain = (ListView) rootView
 					.findViewById(R.id.listView_fragment_main);
 
-			listAdapter = new MyListAdapter(getActivity(), him, series);
+			listAdapter = new SeriesListAdapter(getActivity(), him, series);
 			listViewFragmentMain.setAdapter(listAdapter);
 			
 
@@ -210,9 +198,16 @@ public class SeriesActivity extends FragmentActivity implements
 
 							String videoUrl = series.getListArrayOfEpisodes()
 									.get(position).get("url").toString();
-							// Log.d(tag,""+videoUrl);
-							// change videoUrl
+							
+							//prepare and send request to acquire direct video URL (or HLS stream)
+							urlLoader = new RightUrlVideoLoader();
 							videoUrl = HttpLoader.encodeURIComponent(videoUrl);
+							
+							//set loading state
+							progress.setMessage(getString(R.string.loading));
+							progress.show();
+							
+							//execute the request
 							urlLoader.execute(urlVideo + videoUrl);
 							urlLoader.delegate = (AsyncSeriesItemResponse) getActivity();
 						}

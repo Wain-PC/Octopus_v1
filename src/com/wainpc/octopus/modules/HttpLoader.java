@@ -1,15 +1,12 @@
 package com.wainpc.octopus.modules;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Scanner;
 
 import android.util.Log;
+
+import com.github.kevinsawicki.http.HttpRequest;
+import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 
 public class HttpLoader {
 	
@@ -17,39 +14,32 @@ public class HttpLoader {
 
 		try {
 			String tag = "myLogs";
-			URL url = new URL(inputURL[0]);
+			String url = inputURL[0];
+			String responseBody = "";
 			Log.d(tag,"Sending request to "+inputURL[0]);
 			
-			HttpURLConnection connection = (HttpURLConnection) url
-					.openConnection();
+			HttpRequest request = HttpRequest.get(url);
 
 			// Log the server response code
-			int responseCode = connection.getResponseCode();
-			 //Log.d(tag, "Server responded with: " + responseCode);
+			int responseCode = request.code();
+			 Log.d(tag, "Server responded with code: " + responseCode);
 
 			// And if the code was HTTP_OK then parse the contents
-			if (responseCode == HttpURLConnection.HTTP_OK) {
+			if (request.ok()) {
 				// Convert request content to string
-				InputStream is = connection.getInputStream();
-				String content = convertInputStream(is, "UTF-8");
-				is.close();
-				 //Log.d(tag,"L_send_QuERY_RESPOND  "+content);
-				return content;
+				responseBody = request.body("utf-8");
+				return responseBody;
+			}
+			else {
+				return responseBody;
 			}
 
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (HttpRequestException e) {
+			e.getCause();
+			return "";
 		}
-
-		return null;
 	}
 
-	private static String convertInputStream(InputStream is, String encoding) {
-		Scanner scanner = new Scanner(is, encoding).useDelimiter("\\A");
-		return scanner.hasNext() ? scanner.next() : "";
-	}
 	
 	
 	public static String encodeURIComponent(String component)   {     

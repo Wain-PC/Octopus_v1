@@ -8,6 +8,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -23,7 +25,6 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.SearchView;
 
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
@@ -31,7 +32,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.wainpc.octopus.R;
-import com.wainpc.octopus.adapters.MyListAdapter;
+import com.wainpc.octopus.adapters.SeriesListAdapter;
 import com.wainpc.octopus.asynctasks.JsonSeriesListLoader;
 import com.wainpc.octopus.interfaces.AsyncSeriesListResponse;
 import com.wainpc.octopus.modules.LocalDataBase;
@@ -42,7 +43,6 @@ public class MainActivity extends FragmentActivity implements
 
 	public SectionsPagerAdapter mSectionsPagerAdapter;
 	public ViewPager mViewPager;
-	static ProgressBar progressBar;
 	public JsonSeriesListLoader loader = new JsonSeriesListLoader();
 	public static String tag = "myLogs";
 	private static ImageLoader him;
@@ -56,25 +56,27 @@ public class MainActivity extends FragmentActivity implements
 	public void onLoadItemsSuccess(ArrayList<HashMap<String, String>> data) {
 		Log.d(tag, "Got data!" + data.size());
 		seriesList = data;
-
 		mSectionsPagerAdapter = new SectionsPagerAdapter(
 				getSupportFragmentManager());
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
+		
+		//disable loading mode
+		View loading = findViewById(R.id.loading);
+		loading.setVisibility(View.GONE);
+		
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		//load default app settings (first launch only)
+		PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
 		setContentView(R.layout.activity_main);
-
-		// localDB = new LocalDataBase(this);
-		// Log.d(tag,"data base is created " +localDB);
-
-		// initialize ImageLoader
 		him = ImageLoader.getInstance();
 
 		DisplayImageOptions himOptions = new DisplayImageOptions.Builder()
@@ -114,6 +116,20 @@ public class MainActivity extends FragmentActivity implements
 
 		return true;
 	}
+	
+	 @Override
+	    public boolean onOptionsItemSelected(MenuItem item) {
+	        switch (item.getItemId()) {
+	        	case R.id.action_settings: {
+	        		// Start new activity
+	                Intent settingsIntent = new Intent(this.getApplicationContext(), SettingsActivity.class);
+	                this.startActivity(settingsIntent);
+	        		break;
+	        	}
+	        
+	        }
+	        return true;
+	 }
 
 	// Adapter---------------------------------------------------------------------
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -160,7 +176,7 @@ public class MainActivity extends FragmentActivity implements
 	// Fragment---------------------------------------------------------------------
 	public static class DummySectionFragment extends Fragment {
 
-		public MyListAdapter listAdapter;
+		public SeriesListAdapter listAdapter;
 		View rootView;
 		ListView listViewFragmentMain;
 
@@ -178,7 +194,7 @@ public class MainActivity extends FragmentActivity implements
 		    
 			listViewFragmentMain = (ListView) rootView
 					.findViewById(R.id.listView_fragment_main);
-			listAdapter = new MyListAdapter(getActivity(), him, seriesList);
+			listAdapter = new SeriesListAdapter(getActivity(), him, seriesList);
 			listViewFragmentMain.setAdapter(listAdapter);
 
 			

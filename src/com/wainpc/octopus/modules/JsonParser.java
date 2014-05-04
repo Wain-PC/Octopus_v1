@@ -48,7 +48,7 @@ public class JsonParser {
 					map.put("title", title);
 					seriesList.add(map);
 				} catch (NullPointerException e) {
-					Log.d(tag, "Null pointer for " + i);
+					Log.d(tag, "(1)Null pointer for " + i);
 					continue;
 				} catch (IndexOutOfBoundsException e) {
 					Log.d(tag, "Out of bounds for " + title);
@@ -85,7 +85,7 @@ public class JsonParser {
 					jObj = (JSONObject) jArr.get(i);
 					series.poster.add(jObj.get("url").toString());
 				} catch (NullPointerException e) {
-					Log.d("myLogs", "Null pointer for  " + i);
+					Log.d("myLogs", "(2)Null pointer for " + i);
 					continue;
 				} catch (IndexOutOfBoundsException e) {
 					Log.d("myLogs", "Out of bounds for " + i);
@@ -144,7 +144,7 @@ public class JsonParser {
 							for(k=0;k<jVideo.size();k++) {
 								jV = (JSONObject) jVideo.get(k);
 								map.put("url", (String) jV.get("url"));
-								break;
+								break; //dead code warning is caused by this string. This only gets the first video from the list (temp solution) 
 							}
 							//add episode to list
 							episodeList.add(map);
