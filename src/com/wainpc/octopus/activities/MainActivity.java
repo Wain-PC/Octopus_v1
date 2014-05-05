@@ -8,9 +8,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -38,69 +36,87 @@ import com.wainpc.octopus.interfaces.AsyncSeriesListResponse;
 import com.wainpc.octopus.modules.LocalDataBase;
 
 //Activity---------------------------------------------------------------------
-public class MainActivity extends FragmentActivity implements
+public class MainActivity extends BaseFragmentActivity implements
 		AsyncSeriesListResponse {
 
 	public SectionsPagerAdapter mSectionsPagerAdapter;
 	public ViewPager mViewPager;
-	public JsonSeriesListLoader loader = new JsonSeriesListLoader();
 	public static String tag = "myLogs";
 	private static ImageLoader him;
-	public static LocalDataBase localDB;
-
+	private JsonSeriesListLoader loader = null;
 	public static ArrayList<HashMap<String, String>> seriesList = new ArrayList<HashMap<String, String>>();
 	public HashMap<String, String> map;
 	public String rootURL = "http://192.168.1.106:1337/api/latest?json=1";
 
 	// success handler on
 	public void onLoadItemsSuccess(ArrayList<HashMap<String, String>> data) {
-		Log.d(tag, "Got data!" + data.size());
-		seriesList = data;
-		mSectionsPagerAdapter = new SectionsPagerAdapter(
-				getSupportFragmentManager());
+		if(data.size() == 0) {
+			this.switchToErrorView("Ошипко!");
+		}
+		//loaded normally
+		else {
+			Log.d(tag, "Got data!" + data.size());
+			seriesList = data;
+			mSectionsPagerAdapter = new SectionsPagerAdapter(
+					getSupportFragmentManager());
 
-		// Set up the ViewPager with the sections adapter.
-		mViewPager = (ViewPager) findViewById(R.id.pager);
-		
-		//disable loading mode
-		View loading = findViewById(R.id.loading);
-		loading.setVisibility(View.GONE);
-		
-		mViewPager.setAdapter(mSectionsPagerAdapter);
+			// Set up the ViewPager with the sections adapter.
+			mViewPager = (ViewPager) findViewById(R.id.pager);
+			
+			//disable loading mode
+			this.switchToListView();
+			
+			mViewPager.setAdapter(mSectionsPagerAdapter);			
+		}
 	}
+	
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main;
+    }
+    
+     private void loadImageManager() {
+    	 him = ImageLoader.getInstance();
+
+ 		DisplayImageOptions himOptions = new DisplayImageOptions.Builder()
+ 				.cacheInMemory(true)
+ 				.cacheOnDisc(true)
+ 				// @TODO: move this to settings
+ 				.showImageForEmptyUri(R.drawable.ic_launcher)
+ 				.showImageOnLoading(R.drawable.ic_launcher)
+ 				.showImageOnFail(R.drawable.ic_launcher).build();
+ 		ImageLoaderConfiguration himConfig = new ImageLoaderConfiguration.Builder(
+ 				getBaseContext()).defaultDisplayImageOptions(himOptions)
+ 				.memoryCache(new LruMemoryCache(10 * 1024 * 1024)) // @TODO:
+ 																	// move this
+ 																	// to
+ 																	// settings
+ 				.build();
+
+ 		him.init(himConfig);
+     }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		//load default app settings (first launch only)
-		PreferenceManager.setDefaultValues(this, R.xml.settings, false);
-
-		setContentView(R.layout.activity_main);
-		him = ImageLoader.getInstance();
-
-		DisplayImageOptions himOptions = new DisplayImageOptions.Builder()
-				.cacheInMemory(true)
-				.cacheOnDisc(true)
-				// @TODO: move this to settings
-				.showImageForEmptyUri(R.drawable.ic_launcher)
-				.showImageOnLoading(R.drawable.ic_launcher)
-				.showImageOnFail(R.drawable.ic_launcher).build();
-		ImageLoaderConfiguration himConfig = new ImageLoaderConfiguration.Builder(
-				getBaseContext()).defaultDisplayImageOptions(himOptions)
-				.memoryCache(new LruMemoryCache(10 * 1024 * 1024)) // @TODO:
-																	// move this
-																	// to
-																	// settings
-				.build();
-
-		him.init(himConfig);
+		this.resetUI();
+		this.switchToLoadingView();
+		loadImageManager();
 
 		// make async request
 		Log.d(tag, "make async request");
+		loader = new JsonSeriesListLoader();
 		loader.execute(rootURL);
 		loader.delegate = this;
 	}
+	
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (this.loader != null) {
+            this.loader.cancel(true);
+        }
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -126,7 +142,6 @@ public class MainActivity extends FragmentActivity implements
 	                this.startActivity(settingsIntent);
 	        		break;
 	        	}
-	        
 	        }
 	        return true;
 	 }
@@ -206,17 +221,6 @@ public class MainActivity extends FragmentActivity implements
 									.get("id").toString();
 							String seriesTitle = seriesList.get(position)
 									.get("title").toString();
-
-							// add to db
-							/*
-							 * SQLiteDatabase db =
-							 * localDB.getWritableDatabase(); ContentValues
-							 * newValues = new ContentValues();
-							 * newValues.put("SERIES_ID", seriesId);
-							 * newValues.put("SERIES_NAME", seriesTitle); long
-							 * rowID =db.insert("bookmark", null, newValues);
-							 * Log.d(tag,"db_id "+rowID); //////////////////
-							 */
 
 							// open series page
 							Intent seriesPage = new Intent(getActivity()

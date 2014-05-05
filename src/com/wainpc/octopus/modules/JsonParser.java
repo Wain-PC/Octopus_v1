@@ -59,7 +59,7 @@ public class JsonParser {
 			return seriesList;
 		} catch (ParseException e) {
 			Log.d("myLogs", "Parsing JSON ERROR!" + e);
-			return null;
+			return new ArrayList<HashMap<String, String>>();
 		}
 	}
 

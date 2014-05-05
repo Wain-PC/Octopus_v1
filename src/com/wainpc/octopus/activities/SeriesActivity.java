@@ -3,11 +3,12 @@ package com.wainpc.octopus.activities;
 import java.util.Locale;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
@@ -32,13 +33,13 @@ import com.wainpc.octopus.core.models.Series;
 import com.wainpc.octopus.interfaces.AsyncSeriesItemResponse;
 import com.wainpc.octopus.modules.HttpLoader;
 
-public class SeriesActivity extends FragmentActivity implements
+public class SeriesActivity extends BaseFragmentActivity implements
 		AsyncSeriesItemResponse {
 
 	public SectionsPagerAdapter spAdapter;
 	public ViewPager viewPager;
-	public JsonSeriesItemLoader loader = new JsonSeriesItemLoader();
-	public static RightUrlVideoLoader urlLoader;// static???????
+	public JsonSeriesItemLoader loader = null;
+	public static RightUrlVideoLoader urlLoader = null;
 	public static String tag = "myLogs";
 	public static Series series;
 	public String seriesId;
@@ -50,43 +51,70 @@ public class SeriesActivity extends FragmentActivity implements
 
 	// do something when series is loaded!
 	public void onLoadSeriesSuccess(Series s) {
-		series = s;
-		spAdapter = new SectionsPagerAdapter(getSupportFragmentManager()); 
+		if(s == null) {
+			this.switchToErrorView(getString(R.string.error_json_parse));
+		}
+		else {
+			series = s;
+			spAdapter = new SectionsPagerAdapter(getSupportFragmentManager()); 
 
-		// Set up the ViewPager with the sections adapter.
-		viewPager = (ViewPager) findViewById(R.id.pager_series);
-		
-		View loading = findViewById(R.id.loading);
-		loading.setVisibility(View.GONE);
-		
-		viewPager.setAdapter(spAdapter);
+			//disable loading state
+			this.switchToListView();
+			
+			// Set up the ViewPager with the sections adapter.
+			viewPager = (ViewPager) findViewById(R.id.pager);
+			viewPager.setAdapter(spAdapter);			
+		}
 	}
 
 	public void onGetRightUrlVideo(String str) {
 		// open series page
 		Log.d(tag, "str===" + str);
-		progress.dismiss();
-		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setDataAndType(Uri.parse(str), "video/*");
-		startActivity(Intent.createChooser(intent, "Complete action using"));
+		if(str == "ERR") {
+			//отобразить сообщение об ошибке
+			//TODO: дать пользователю возможность сообщить об отсутствующем видео!!!
+			progress.dismiss();
+			//this.switchToErrorView(getString(R.string.error_no_direct_video_url));
+		}
+		else {
+			progress.dismiss();
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			intent.setDataAndType(Uri.parse(str), "video/*");
+			startActivity(Intent.createChooser(intent, "Complete action using"));
+		}
 	}
+	
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_series;
+    }
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_series);
+		
+		this.resetUI();
+		this.switchToLoadingView();
+		
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		Bundle extras = getIntent().getExtras();
 		seriesId = extras.getString("id");
 		seriesTitle = extras.getString("title");
 		setTitle(seriesTitle);
+		loader = new JsonSeriesItemLoader();
 		loader.execute(rootURL + seriesId + "?json=1");
-		loader.delegate = this;
-		
-		progress = new ProgressDialog(this);
-
+		loader.delegate = this;		
 		him = ImageLoader.getInstance();
 	}
+	
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (this.loader != null) {
+            this.loader.cancel(true);
+        }
+    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -196,18 +224,30 @@ public class SeriesActivity extends FragmentActivity implements
 						public void onItemClick(AdapterView<?> parent,
 								View view, int position, long id) {
 
+							//prepare and send request to acquire direct video URL (or HLS stream)
 							String videoUrl = series.getListArrayOfEpisodes()
 									.get(position).get("url").toString();
-							
-							//prepare and send request to acquire direct video URL (or HLS stream)
-							urlLoader = new RightUrlVideoLoader();
 							videoUrl = HttpLoader.encodeURIComponent(videoUrl);
 							
 							//set loading state
+							progress = new ProgressDialog(getActivity());
 							progress.setMessage(getString(R.string.loading));
+							progress.setCancelable(true);
+						    progress.setOnCancelListener(new OnCancelListener() {
+
+						        @Override
+						        public void onCancel(DialogInterface dialog) {
+						        	//when the loading Episode window has been canceled
+						        	//we should stop the related loader asynctask
+						            if (urlLoader != null) {
+						            	urlLoader.cancel(true);
+						            }
+						        }
+						    });
 							progress.show();
 							
 							//execute the request
+							urlLoader = new RightUrlVideoLoader();
 							urlLoader.execute(urlVideo + videoUrl);
 							urlLoader.delegate = (AsyncSeriesItemResponse) getActivity();
 						}

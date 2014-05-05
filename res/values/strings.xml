@@ -12,14 +12,24 @@
     <string name="search_hint">Введите название сериала</string>
     <string name="loading">Загрузка</string>
     
+    <!-- Preferences -->
     <string name="pref_category">Основные</string>
     <string name="pref_domain_title">Адрес сервера</string>
     <string name="pref_domain_summary">Адрес, по которому находятся данные</string>
-    
     <string name="pref_domain_value">192.168.1.106:1337</string>
-    
-        <string name="pref_api_latest_value">/api/latest?json=1</string>
+	<string name="pref_api_latest_value">/api/latest?json=1</string>
         
     
+        
+        <!-- Errors -->
+    <string name="error_download_fail">Невозможно открыть страницу.</string>
+    <string name="error_unknown">Произошла неизвестная ошибка.</string>
+    <string name="error_json_parse">Ошибка во время чтения страницы. Попробуйте перезагрузить.</string>
+    <string name="error_search_null">Поиск ничего не нашел =(</string>
+    <string name="error_create_request">Невозможно выполнить запрос к странице.</string>
+    <string name="error_read_response">Невозможно прочитать ответ сервера.</string>
+    <string name="error_no_api_available">Отсутствует этот метод обращения к JSON API.</string>
+    <string name="error_list_empty">Список пуст.</string>
+    <string name="error_no_direct_video_url">Не удалось получить видео.</string>
     
 </resources>

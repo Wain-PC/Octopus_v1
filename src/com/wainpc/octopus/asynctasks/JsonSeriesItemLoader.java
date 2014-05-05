@@ -22,7 +22,16 @@ public class JsonSeriesItemLoader extends AsyncTask<String, String, String> {
 	@Override
 	protected void onPostExecute(String result) {
 		super.onPostExecute(result);
-		Series series = JsonParser.parseSeries(result);
-		delegate.onLoadSeriesSuccess(series);
+		Series series = new Series();
+		
+		if(result != "ERR") {
+			series = JsonParser.parseSeries(result);
+			delegate.onLoadSeriesSuccess(series);
+		}
+		//in case of error
+		else {
+			delegate.onLoadSeriesSuccess(null);
+		}
+
 	}
 }

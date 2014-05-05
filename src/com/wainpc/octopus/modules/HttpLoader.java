@@ -31,12 +31,13 @@ public class HttpLoader {
 				return responseBody;
 			}
 			else {
-				return responseBody;
+				return "ERR";
+				//return responseBody;
 			}
 
 		} catch (HttpRequestException e) {
 			e.getCause();
-			return "";
+			return "ERR";
 		}
 	}
 

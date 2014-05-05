@@ -24,7 +24,11 @@ public class JsonSeriesListLoader extends AsyncTask<String, String, String> {
 	@Override
 	protected void onPostExecute(String result) {
 		super.onPostExecute(result);
-		ArrayList<HashMap<String, String>> seriesList = JsonParser.parseSeriesList(result);
+		ArrayList<HashMap<String, String>> seriesList = new ArrayList<HashMap<String, String>>();
+		//rewrite using normal error system!
+		if(result != "ERR") {
+			seriesList = JsonParser.parseSeriesList(result);			
+		}
 		delegate.onLoadItemsSuccess(seriesList);
 	}
 }
