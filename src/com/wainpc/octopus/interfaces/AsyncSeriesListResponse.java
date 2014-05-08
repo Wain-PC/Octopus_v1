@@ -1,10 +1,9 @@
 package com.wainpc.octopus.interfaces;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import com.wainpc.octopus.core.models.Series;
+import com.wainpc.octopus.core.models.EpisodeItem;
 
 public interface AsyncSeriesListResponse {
-	void onLoadItemsSuccess(ArrayList<HashMap<String, String>> out);
+	void onLoadItemsSuccess(ArrayList<EpisodeItem> out);
 }

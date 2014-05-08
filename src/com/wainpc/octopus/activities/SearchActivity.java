@@ -1,7 +1,6 @@
 package com.wainpc.octopus.activities;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -18,6 +17,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.wainpc.octopus.R;
 import com.wainpc.octopus.adapters.SeriesListAdapter;
 import com.wainpc.octopus.asynctasks.JsonSeriesListLoader;
+import com.wainpc.octopus.core.models.EpisodeItem;
 import com.wainpc.octopus.interfaces.AsyncSeriesListResponse;
 import com.wainpc.octopus.modules.HttpLoader;
 
@@ -26,7 +26,7 @@ public class SearchActivity extends Activity implements AsyncSeriesListResponse 
 	private static ImageLoader him;
 	public String rootURL = "http://192.168.1.106:1337/api/search?json=1&q=";
 	public JsonSeriesListLoader loader = new JsonSeriesListLoader();
-	public static ArrayList<HashMap<String, String>> seriesList = new ArrayList<HashMap<String, String>>();
+	public static ArrayList<EpisodeItem> seriesList = new ArrayList<EpisodeItem>();
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,14 +44,14 @@ public class SearchActivity extends Activity implements AsyncSeriesListResponse 
 			String query = intent.getStringExtra(SearchManager.QUERY);
 			Log.d(tag, "query=" + query);
 			loader.execute(rootURL + HttpLoader.encodeURIComponent(query));
-			loader.delegate = SearchActivity.this;
+			loader.delegateList = this;
 			setTitle(query);
 		}
 
 	}
 
 	@Override
-	public void onLoadItemsSuccess(ArrayList<HashMap<String, String>> out) {
+	public void onLoadItemsSuccess(ArrayList<EpisodeItem> out) {
 		
 		SeriesListAdapter listAdapter;
 		ListView listViewFragmentMain = (ListView) findViewById(R.id.listView_fragment_main);

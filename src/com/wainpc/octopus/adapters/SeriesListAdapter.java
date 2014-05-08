@@ -15,20 +15,21 @@ import android.widget.TextView;
 import com.hb.views.PinnedSectionListView.PinnedSectionListAdapter;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.wainpc.octopus.R;
+import com.wainpc.octopus.core.models.EpisodeItem;
 import com.wainpc.octopus.core.models.Series;
 
 public class SeriesListAdapter extends BaseAdapter implements
 		PinnedSectionListAdapter {
 
 	private Activity activity;
-	private ArrayList<HashMap<String, String>> data;
+	private ArrayList<EpisodeItem> data;
 	private LayoutInflater inflater = null;
 	private static final String tag = "myLogs";
 	private static ImageLoader him;
 	private Context context;
 
 	public SeriesListAdapter(Activity a, ImageLoader im,
-			ArrayList<HashMap<String, String>> d) {
+			ArrayList<EpisodeItem> d) {
 		activity = a;
 		data = d;
 		inflater = (LayoutInflater) activity
@@ -76,6 +77,7 @@ public class SeriesListAdapter extends BaseAdapter implements
 				vi.setTag(holder);
 
 			} 
+			//it's a header
 			else if (getItemViewType(position) == 1) {
 				vi = inflater.inflate(R.layout.serieslistadapter_header, null);
 				holder.title = (TextView) vi.findViewById(R.id.title); // title

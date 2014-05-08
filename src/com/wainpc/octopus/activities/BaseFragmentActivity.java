@@ -1,15 +1,14 @@
 package com.wainpc.octopus.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.TextView;
 
 import com.wainpc.octopus.R;
 
-public abstract class BaseFragmentActivity extends FragmentActivity {
+public abstract class BaseFragmentActivity extends CastActivity {
+	
     private enum ViewType {
         LIST, LOADING, ERROR
     };

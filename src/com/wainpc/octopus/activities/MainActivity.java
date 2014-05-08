@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,8 +12,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -23,33 +19,42 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.SearchView;
 
+import com.google.sample.castcompanionlibrary.cast.VideoCastManager;
+import com.google.sample.castcompanionlibrary.widgets.MiniController;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.wainpc.octopus.R;
+import com.wainpc.octopus.adapters.GenresListAdapter;
 import com.wainpc.octopus.adapters.SeriesListAdapter;
+import com.wainpc.octopus.asynctasks.JsonGenresListLoader;
 import com.wainpc.octopus.asynctasks.JsonSeriesListLoader;
-import com.wainpc.octopus.interfaces.AsyncSeriesListResponse;
-import com.wainpc.octopus.modules.LocalDataBase;
+import com.wainpc.octopus.core.models.EpisodeItem;
+import com.wainpc.octopus.core.models.Genre;
+import com.wainpc.octopus.interfaces.MainActivityInterface;
 
 //Activity---------------------------------------------------------------------
 public class MainActivity extends BaseFragmentActivity implements
-		AsyncSeriesListResponse {
+		MainActivityInterface {
 
 	public SectionsPagerAdapter mSectionsPagerAdapter;
 	public ViewPager mViewPager;
 	public static String tag = "myLogs";
 	private static ImageLoader him;
-	private JsonSeriesListLoader loader = null;
-	public static ArrayList<HashMap<String, String>> seriesList = new ArrayList<HashMap<String, String>>();
+	private JsonSeriesListLoader latestSeriesLoader = null;
+	private JsonGenresListLoader genreListLoader = null;
+	public static ArrayList<EpisodeItem> seriesList = new ArrayList<EpisodeItem>();
+	public static ArrayList<Genre> genreList = new ArrayList<Genre>();
 	public HashMap<String, String> map;
-	public String rootURL = "http://192.168.1.106:1337/api/latest?json=1";
-
+	public String latestSeriesURL = "http://192.168.1.106:1337/api/latest?json=1";
+	public String genresURL = "http://192.168.1.106:1337/api/genres?json=1";
+	private VideoCastManager mCastManager;
+	private MiniController mMini;
+	
 	// success handler on
-	public void onLoadItemsSuccess(ArrayList<HashMap<String, String>> data) {
+	public void onLoadLatestSeriesSuccess(ArrayList<EpisodeItem> data) {
 		if(data.size() == 0) {
 			this.switchToErrorView("Îøèïêî!");
 		}
@@ -57,17 +62,26 @@ public class MainActivity extends BaseFragmentActivity implements
 		else {
 			Log.d(tag, "Got data!" + data.size());
 			seriesList = data;
-			mSectionsPagerAdapter = new SectionsPagerAdapter(
-					getSupportFragmentManager());
-
-			// Set up the ViewPager with the sections adapter.
-			mViewPager = (ViewPager) findViewById(R.id.pager);
 			
-			//disable loading mode
-			this.switchToListView();
-			
-			mViewPager.setAdapter(mSectionsPagerAdapter);			
+			//load genres then
+			genreListLoader = new JsonGenresListLoader();
+			genreListLoader.execute(genresURL);
+			genreListLoader.delegate = this;
+					
 		}
+	}
+	
+	@Override
+	public void onLoadGenresListSuccess(ArrayList<Genre> out) {
+		genreList = out;
+		
+		mSectionsPagerAdapter = new SectionsPagerAdapter(
+				getSupportFragmentManager());
+		// Set up the ViewPager with the sections adapter.
+		//disable loading mode
+		this.switchToListView();
+		mViewPager = (ViewPager) findViewById(R.id.pager);
+		mViewPager.setAdapter(mSectionsPagerAdapter);	
 	}
 	
     @Override
@@ -95,56 +109,62 @@ public class MainActivity extends BaseFragmentActivity implements
 
  		him.init(himConfig);
      }
+     
+	   private void setupMiniController() {
+	        mMini = (MiniController) findViewById(R.id.mc1);
+	        mCastManager.addMiniController(mMini);
+	    }
+
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {	
 		super.onCreate(savedInstanceState);
 		this.resetUI();
 		this.switchToLoadingView();
 		loadImageManager();
+		mCastManager = CastApplication.getCastManager(this);
+		setupMiniController();
 
 		// make async request
 		Log.d(tag, "make async request");
-		loader = new JsonSeriesListLoader();
-		loader.execute(rootURL);
-		loader.delegate = this;
+		latestSeriesLoader = new JsonSeriesListLoader();
+		latestSeriesLoader.execute(latestSeriesURL);
+		latestSeriesLoader.delegate = this;
+	}
+	
+	@Override
+    protected void onResume() {
+		Log.d(tag, "onResume() was called");
+        mCastManager = CastApplication.getCastManager(this);
+        mCastManager.addVideoCastConsumer(mCastConsumer);
+        mCastManager.incrementUiCounter();
+        super.onResume();
+    }
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mCastManager.removeVideoCastConsumer(mCastConsumer);
+        mMini.removeOnMiniControllerChangedListener(mCastManager);
+        mCastManager.decrementUiCounter();
 	}
 	
     @Override
     public void onDestroy() {
-        super.onDestroy();
-        if (this.loader != null) {
-            this.loader.cancel(true);
+        if (this.latestSeriesLoader != null) {
+            this.latestSeriesLoader.cancel(true);
         }
+        
+        Log.d(tag, "onDestroy() is called");
+        if (null != mCastManager) {
+            mMini.removeOnMiniControllerChangedListener(mCastManager);
+            mCastManager.removeMiniController(mMini);
+            mCastManager.clearContext(this);
+            mCastConsumer = null;
+        }
+        super.onDestroy();  
     }
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-
-		// Associate searchable configuration with the SearchView
-		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
-				.getActionView();
-		searchView.setSearchableInfo(searchManager
-				.getSearchableInfo(getComponentName()));
-
-		return true;
-	}
-	
-	 @Override
-	    public boolean onOptionsItemSelected(MenuItem item) {
-	        switch (item.getItemId()) {
-	        	case R.id.action_settings: {
-	        		// Start new activity
-	                Intent settingsIntent = new Intent(this.getApplicationContext(), SettingsActivity.class);
-	                this.startActivity(settingsIntent);
-	        		break;
-	        	}
-	        }
-	        return true;
-	 }
+    
 
 	// Adapter---------------------------------------------------------------------
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -158,11 +178,11 @@ public class MainActivity extends BaseFragmentActivity implements
 			Fragment f = null;
 			switch (position) {
 			case 0: {
-				f = new DummySectionFragment();
+				f = new LatestAddedFragment();
 				break;
 			}
 			case 1: {
-				f = new DummySectionFragment();
+				f = new GenresFragment();
 				break;
 			}
 			}
@@ -181,7 +201,7 @@ public class MainActivity extends BaseFragmentActivity implements
 			case 0:
 				return getString(R.string.title_latest).toUpperCase(l);
 			case 1:
-				return getString(R.string.title_alphabet).toUpperCase(l);
+				return getString(R.string.title_genres).toUpperCase(l);
 		
 			}
 			return null;
@@ -189,13 +209,13 @@ public class MainActivity extends BaseFragmentActivity implements
 	}
 
 	// Fragment---------------------------------------------------------------------
-	public static class DummySectionFragment extends Fragment {
-
+	public static class LatestAddedFragment extends Fragment {
 		public SeriesListAdapter listAdapter;
 		View rootView;
 		ListView listViewFragmentMain;
 
-		public DummySectionFragment() {
+		public LatestAddedFragment() {
+			// TODO Auto-generated constructor stub
 		}
 
 		// View---------------------------------------------------------------------
@@ -247,6 +267,55 @@ public class MainActivity extends BaseFragmentActivity implements
 			});
 			return rootView;
 		}
+
 	}
+	
+	
+	// Fragment---------------------------------------------------------------------
+	public static class GenresFragment extends Fragment {
+
+		
+		public GenresListAdapter listAdapter;
+		View rootView;
+		ListView listViewFragmentMain;
+
+		public GenresFragment() {
+		}
+
+		// View---------------------------------------------------------------------
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			
+			rootView = inflater.inflate(R.layout.fragment_list, container,
+					false);
+			
+		    
+			listViewFragmentMain = (ListView) rootView
+					.findViewById(R.id.listView_fragment_main);
+			listAdapter = new GenresListAdapter(getActivity(), genreList);
+			listViewFragmentMain.setAdapter(listAdapter);
+
+			
+			listViewFragmentMain
+					.setOnItemClickListener(new OnItemClickListener() {
+						public void onItemClick(AdapterView<?> parent,
+								View view, int position, long id) {
+							String genreId = genreList.get(position).id;
+							Log.d(tag,"GENRE_ID:"+genreId);
+							// open series page
+//							Intent seriesPage = new Intent(getActivity()
+//									.getApplicationContext(),
+//									SeriesActivity.class);
+//							seriesPage.putExtra("id", genreId);
+//							startActivity(seriesPage);
+						}
+					});
+			
+			return rootView;
+		}
+	}
+	//----END FRAGMENT-------------------------------------------
 
 }
+//----END ACTIVITY----------------------------------------------

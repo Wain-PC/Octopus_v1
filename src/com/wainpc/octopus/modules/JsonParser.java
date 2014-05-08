@@ -10,18 +10,22 @@ import org.json.simple.parser.ParseException;
 
 import android.util.Log;
 
+import com.wainpc.octopus.core.models.EpisodeItem;
+import com.wainpc.octopus.core.models.Genre;
 import com.wainpc.octopus.core.models.Series;
 
 public class JsonParser {
-	public static ArrayList<HashMap<String, String>> parseSeriesList(
+	
+	public static String tag = "myLogs";
+	
+	public static ArrayList<EpisodeItem> parseSeriesList(
 			String jsonString) {
-		try {
 
-			String tag = "myLogs";
+		try {
 			Log.d(tag, "Parsing JSON!");
 
-			HashMap<String, String> map = new HashMap<String, String>();
-			ArrayList<HashMap<String, String>> seriesList = new ArrayList<HashMap<String, String>>();
+			EpisodeItem map = new EpisodeItem();
+			ArrayList<EpisodeItem> seriesList = new ArrayList<EpisodeItem>();
 			JSONParser parser = new JSONParser();
 			JSONArray root = (JSONArray) parser.parse(jsonString);
 			JSONObject jsonSeries, jObj;
@@ -32,15 +36,14 @@ public class JsonParser {
 			Log.d(tag, "Size:" + root.size());
 			for (i = 0; i < root.size(); i++) {
 				try {
-					map = new HashMap<String, String>();
+					map = new EpisodeItem();
 					jsonSeries = (JSONObject) root.get(i);
 					title = (String) jsonSeries.get("title_ru");
 					posters = (JSONArray) jsonSeries.get("poster");
-					if (posters.size() != 0) {
+					if (posters != null && posters.size() != 0) {
 						jObj = (JSONObject) posters.get(0);
 						posterURL = (String) jObj.get("url");
 						map.put("posterURL", posterURL);
-						Log.d("tag","!!!!!!!!!!!!!!!!!"+posterURL);
 					}
 					map.put("id",
 							(String) Long.toString((Long) jsonSeries.get("id")));
@@ -59,7 +62,7 @@ public class JsonParser {
 			return seriesList;
 		} catch (ParseException e) {
 			Log.d("myLogs", "Parsing JSON ERROR!" + e);
-			return new ArrayList<HashMap<String, String>>();
+			return new ArrayList<EpisodeItem>();
 		}
 	}
 
@@ -78,18 +81,21 @@ public class JsonParser {
 			series.poster = new ArrayList<String>();
 			series.episodeList = getArrayListOfEpisodes(jsonSeries);
 			jArr = (JSONArray) jsonSeries.get("poster");
-
+			
+			if(jArr != null) {
+				Log.d("myLogs","JARR:"+jArr);
 			// getting posters
-			for (i = 0; i < jArr.size(); i++) {
-				try {
-					jObj = (JSONObject) jArr.get(i);
-					series.poster.add(jObj.get("url").toString());
-				} catch (NullPointerException e) {
-					Log.d("myLogs", "(2)Null pointer for " + i);
-					continue;
-				} catch (IndexOutOfBoundsException e) {
-					Log.d("myLogs", "Out of bounds for " + i);
-					continue;
+				for (i = 0; i < jArr.size(); i++) {
+					try {
+						jObj = (JSONObject) jArr.get(i);
+						series.poster.add(jObj.get("url").toString());
+					} catch (NullPointerException e) {
+						Log.d("myLogs", "(2)Null pointer for " + i);
+						continue;
+					} catch (IndexOutOfBoundsException e) {
+						Log.d("myLogs", "Out of bounds for " + i);
+						continue;
+					}
 				}
 			}
 
@@ -101,10 +107,10 @@ public class JsonParser {
 
 	}
 	
-	public static ArrayList<HashMap<String, String>> getArrayListOfEpisodes(JSONObject jsonSeries) {
+	public static ArrayList<EpisodeItem> getArrayListOfEpisodes(JSONObject jsonSeries) {
 		
-		HashMap<String, String> map;
-		ArrayList<HashMap<String, String>> episodeList = new ArrayList<HashMap<String, String>>();
+		EpisodeItem episode;
+		ArrayList<EpisodeItem> episodeList = new ArrayList<EpisodeItem>();
 		Integer i, j, k;
 		String epTitle;
 		JSONArray jSeason, jEpisode, jVideo;
@@ -117,40 +123,83 @@ public class JsonParser {
 						jS = (JSONObject) jSeason.get(i);
 						
 						//first, let's add season divider to the list
-						map = new HashMap<String, String>();
-						map.put("type", "se");
-						map.put("title", "Сезон "+(String) jS.get("number").toString());
-						map.put("seasonNumber", (String) jS.get("number").toString());
-						map.put("episodeNumber", "-1");
-						episodeList.add(map);
+						episode = new EpisodeItem();
+						episode.put("type", "se");
+						episode.put("title", "Сезон "+(String) jS.get("number").toString());
+						episode.put("seasonNumber", (String) jS.get("number").toString());
+						episode.put("episodeNumber", "-1");
+						episodeList.add(episode);
 						
 						jEpisode = (JSONArray) jS.get("episode");
 						//iterating over Episodes in a season
 						for(j=0;j<jEpisode.size();j++) {
 							
 							//now let's parse episodes
-							map = new HashMap<String, String>();
+							episode = new EpisodeItem();
 							jE = (JSONObject) jEpisode.get(j);
 							epTitle = (String) jE.get("title");
 							if(epTitle == null || epTitle.length() == 0) epTitle = "Серия "+Long.toString((Long)jE.get("number"));
-							map.put("seasonNumber", (String) jS.get("number").toString());
-							map.put("episodeNumber", (String) jE.get("number").toString());
-							map.put("title", epTitle);
-							map.put("posterURL", (String) jE.get("thumbnail"));
+							episode.put("seasonNumber", (String) jS.get("number").toString());
+							episode.put("episodeNumber", (String) jE.get("number").toString());
+							episode.put("title", epTitle);
+							episode.put("posterURL", (String) jE.get("thumbnail"));
 							//type is "episode"
-							map.put("type", "ep");
+							episode.put("type", "ep");
 							
 							jVideo = (JSONArray) jE.get("video");
 							for(k=0;k<jVideo.size();k++) {
 								jV = (JSONObject) jVideo.get(k);
-								map.put("url", (String) jV.get("url"));
+								episode.put("url", (String) jV.get("url"));
+								episode.put("videoType", (String) jV.get("type"));
 								break; //dead code warning is caused by this string. This only gets the first video from the list (temp solution) 
 							}
 							//add episode to list
-							episodeList.add(map);
+							episodeList.add(episode);
 						}
 					}
 		
 		return episodeList;		
 		}
+
+	public static ArrayList<Genre> parseGenreList(String jsonString) {
+		ArrayList<Genre> genreList = new ArrayList<Genre>();
+		Log.d(tag,"Parsing genres list");
+		
+		try {
+			JSONParser parser = new JSONParser();
+			JSONArray root = (JSONArray) parser.parse(jsonString);
+			JSONObject jGenre = null;
+			Genre genre = null;
+			String title_ru, title_en;
+			String id;
+			
+			Integer i = 0;
+			Log.d(tag,"NUM genres:"+root.size());
+			for (i = 0; i < root.size(); i++) {
+				try {
+				genre = new Genre();
+				jGenre = (JSONObject) root.get(i);
+				title_ru = (String) jGenre.get("title_ru").toString();
+				title_en = (String) jGenre.get("title_en").toString();
+				id = (String) jGenre.get("id").toString();
+				genre.id = id;
+				genre.title_ru = title_ru;
+				genre.title_en = title_en;
+				
+				genreList.add(genre);
+				} catch (NullPointerException e) {
+					Log.d(tag, "(1)Null pointer for " + i);
+					continue;
+				} catch (IndexOutOfBoundsException e) {
+					Log.d(tag, "Out of bounds for " + i);
+					continue;
+				}
+			}
+			Log.d(tag,"Returning genreList with items:"+genreList.size());
+			return genreList;
+		} catch (ParseException e) {
+			Log.d("myLogs", "Parsing JSON ERROR!" + e);
+			return genreList;
+		}
+	}
 }

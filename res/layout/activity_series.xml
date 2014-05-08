@@ -4,7 +4,14 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-<android.support.v4.view.ViewPager
+    
+<RelativeLayout
+    android:id="@+id/rel_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    
+    <android.support.v4.view.ViewPager
     android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -24,6 +31,20 @@
         android:textColor="#fff" />
 
 </android.support.v4.view.ViewPager>
+
+    
+        <com.google.sample.castcompanionlibrary.widgets.MiniController
+        android:id="@+id/mc1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/shadow7"
+        android:visibility="gone" >
+    </com.google.sample.castcompanionlibrary.widgets.MiniController>
+
+</RelativeLayout>
+    
+    
 
 <include
         android:id="@+id/loading"

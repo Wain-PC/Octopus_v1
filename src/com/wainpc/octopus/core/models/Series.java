@@ -15,10 +15,10 @@ public class Series {
 	public ArrayList<String> poster;
 	public ArrayList<Season> season;
 	//added for comfort
-	public ArrayList<HashMap<String,String>> episodeList;
+	public ArrayList<EpisodeItem> episodeList;
 	
 	
-	public ArrayList<HashMap<String,String>> getListArrayOfEpisodes() {
+	public ArrayList<EpisodeItem> getListArrayOfEpisodes() {
 		return episodeList;	
 	}
 };
