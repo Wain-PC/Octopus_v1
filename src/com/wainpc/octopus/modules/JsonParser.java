@@ -27,7 +27,8 @@ public class JsonParser {
 			EpisodeItem map = new EpisodeItem();
 			ArrayList<EpisodeItem> seriesList = new ArrayList<EpisodeItem>();
 			JSONParser parser = new JSONParser();
-			JSONArray root = (JSONArray) parser.parse(jsonString);
+			JSONObject r = (JSONObject) parser.parse(jsonString);
+			JSONArray root = (JSONArray) r.get("list");
 			JSONObject jsonSeries, jObj;
 			String title = "";
 			JSONArray posters;
@@ -167,7 +168,8 @@ public class JsonParser {
 		
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray root = (JSONArray) parser.parse(jsonString);
+			JSONObject r = (JSONObject) parser.parse(jsonString);
+			JSONArray root = (JSONArray) r.get("genres"); 
 			JSONObject jGenre = null;
 			Genre genre = null;
 			String title_ru, title_en;

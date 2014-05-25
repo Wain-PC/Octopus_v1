@@ -48,8 +48,8 @@ public class MainActivity extends BaseFragmentActivity implements
 	public static ArrayList<EpisodeItem> seriesList = new ArrayList<EpisodeItem>();
 	public static ArrayList<Genre> genreList = new ArrayList<Genre>();
 	public HashMap<String, String> map;
-	public String latestSeriesURL = "http://192.168.1.106:1337/api/latest?json=1";
-	public String genresURL = "http://192.168.1.106:1337/api/genres?json=1";
+	public String latestSeriesURL = "http://173.44.34.162:1337/latest?json=1";
+	public String genresURL = "http://173.44.34.162:1337/genres?json=1";
 	private VideoCastManager mCastManager;
 	private MiniController mMini;
 	
@@ -224,8 +224,7 @@ public class MainActivity extends BaseFragmentActivity implements
 				Bundle savedInstanceState) {
 			
 			rootView = inflater.inflate(R.layout.fragment_list, container,
-					false);
-			
+					false);			
 		    
 			listViewFragmentMain = (ListView) rootView
 					.findViewById(R.id.listView_fragment_main);

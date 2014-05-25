@@ -24,7 +24,7 @@ import com.wainpc.octopus.modules.HttpLoader;
 public class SearchActivity extends Activity implements AsyncSeriesListResponse {
 	public static String tag = "myLogs";
 	private static ImageLoader him;
-	public String rootURL = "http://192.168.1.106:1337/api/search?json=1&q=";
+	public String rootURL = "http://173.44.34.162:1337/search?json=1&q=";
 	public JsonSeriesListLoader loader = new JsonSeriesListLoader();
 	public static ArrayList<EpisodeItem> seriesList = new ArrayList<EpisodeItem>();
 

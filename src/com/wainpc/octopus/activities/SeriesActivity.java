@@ -52,8 +52,8 @@ public class SeriesActivity extends BaseFragmentActivity implements
 	public String seriesTitle;
 	public static String seriesPoster;
 	public static EpisodeItem selectedEpisode;
-	public String rootURL = "http://192.168.1.106:1337/api/series/";
-	public static String urlVideo = "http://192.168.1.106:1337/api/getdirectlink?url=";
+	public String rootURL = "http://173.44.34.162:1337/series/";
+	public static String urlVideo = "http://173.44.34.162:1337/api/getdirectlink?url=";
 	private static ImageLoader him;
 	public static ProgressDialog progress;
 	private MiniController mMini;
@@ -89,20 +89,20 @@ public class SeriesActivity extends BaseFragmentActivity implements
 		else {
 			progress.dismiss();
 			//remote play
-			//try {
-                //mCastManager.checkConnectivity();
+			try {
+                mCastManager.checkConnectivity();
                 MediaInfo m = buildMediaInfo(str,selectedEpisode); 
                 Log.d(tag,"MEDIAINFO:"+m);
                 loadRemoteMedia(m);
-                //finish();
-            /*} catch (Exception e) {
+                finish();
+            } catch (Exception e) {
                 Log.d(tag,"Cannot start casting:"+e.getMessage());
     			//local play
     			Intent intent = new Intent(Intent.ACTION_VIEW);
-    			intent.setDataAndType(Uri.parse(str), "video/*");
+    			intent.setDataAndType(Uri.parse(str), "video/mp4");
     			startActivity(Intent.createChooser(intent, "Complete action using"));
                 return;
-            }*/
+            }
 		}
 	}
 	
