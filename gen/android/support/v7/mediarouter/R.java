@@ -62,7 +62,7 @@ public final class R {
 		public static final int dropDownListViewStyle = 0x7f010021;
 		public static final int dropdownListPreferredItemHeight = 0x7f010048;
 		public static final int expandActivityOverflowButtonDrawable = 0x7f01006b;
-		public static final int externalRouteEnabledDrawable = 0x7f01007f;
+		public static final int externalRouteEnabledDrawable = 0x7f01008e;
 		public static final int height = 0x7f010026;
 		public static final int homeAsUpIndicator = 0x7f010013;
 		public static final int homeLayout = 0x7f010033;
@@ -80,10 +80,10 @@ public final class R {
 		public static final int listPreferredItemPaddingLeft = 0x7f01001f;
 		public static final int listPreferredItemPaddingRight = 0x7f010020;
 		public static final int logo = 0x7f01002d;
-		public static final int mediaRouteButtonStyle = 0x7f010080;
-		public static final int mediaRouteConnectingDrawable = 0x7f010082;
-		public static final int mediaRouteOffDrawable = 0x7f010081;
-		public static final int mediaRouteOnDrawable = 0x7f010083;
+		public static final int mediaRouteButtonStyle = 0x7f01008f;
+		public static final int mediaRouteConnectingDrawable = 0x7f010091;
+		public static final int mediaRouteOffDrawable = 0x7f010090;
+		public static final int mediaRouteOnDrawable = 0x7f010092;
 		public static final int navigationMode = 0x7f010027;
 		public static final int paddingEnd = 0x7f010039;
 		public static final int paddingStart = 0x7f010038;
@@ -141,7 +141,7 @@ public final class R {
 		public static final int abc_split_action_bar_is_narrow = 0x7f070002;
 	}
 	public static final class color {
-		public static final int abc_search_url_text_holo = 0x7f08001b;
+		public static final int abc_search_url_text_holo = 0x7f080028;
 		public static final int abc_search_url_text_normal = 0x7f080000;
 		public static final int abc_search_url_text_pressed = 0x7f080002;
 		public static final int abc_search_url_text_selected = 0x7f080001;
@@ -276,69 +276,69 @@ public final class R {
 		public static final int mr_ic_media_route_on_holo_light = 0x7f0200ad;
 	}
 	public static final class id {
-		public static final int action_bar = 0x7f06001f;
+		public static final int action_bar = 0x7f06002e;
 		public static final int action_bar_activity_content = 0x7f060015;
-		public static final int action_bar_container = 0x7f06001e;
-		public static final int action_bar_overlay_layout = 0x7f060022;
-		public static final int action_bar_root = 0x7f06001d;
-		public static final int action_bar_subtitle = 0x7f060026;
-		public static final int action_bar_title = 0x7f060025;
-		public static final int action_context_bar = 0x7f060020;
+		public static final int action_bar_container = 0x7f06002d;
+		public static final int action_bar_overlay_layout = 0x7f060031;
+		public static final int action_bar_root = 0x7f06002c;
+		public static final int action_bar_subtitle = 0x7f060035;
+		public static final int action_bar_title = 0x7f060034;
+		public static final int action_context_bar = 0x7f06002f;
 		public static final int action_menu_divider = 0x7f060016;
 		public static final int action_menu_presenter = 0x7f060017;
-		public static final int action_mode_close_button = 0x7f060027;
-		public static final int activity_chooser_view_content = 0x7f060028;
+		public static final int action_mode_close_button = 0x7f060036;
+		public static final int activity_chooser_view_content = 0x7f060037;
 		public static final int always = 0x7f06000b;
 		public static final int beginning = 0x7f060011;
-		public static final int checkbox = 0x7f060030;
+		public static final int checkbox = 0x7f06003f;
 		public static final int collapseActionView = 0x7f06000d;
-		public static final int default_activity_button = 0x7f06002b;
+		public static final int default_activity_button = 0x7f06003a;
 		public static final int dialog = 0x7f06000e;
 		public static final int disableHome = 0x7f060008;
 		public static final int dropdown = 0x7f06000f;
-		public static final int edit_query = 0x7f060033;
+		public static final int edit_query = 0x7f060042;
 		public static final int end = 0x7f060013;
-		public static final int expand_activities_button = 0x7f060029;
-		public static final int expanded_menu = 0x7f06002f;
+		public static final int expand_activities_button = 0x7f060038;
+		public static final int expanded_menu = 0x7f06003e;
 		public static final int home = 0x7f060014;
 		public static final int homeAsUp = 0x7f060005;
-		public static final int icon = 0x7f06002d;
+		public static final int icon = 0x7f06003c;
 		public static final int ifRoom = 0x7f06000a;
-		public static final int image = 0x7f06002a;
+		public static final int image = 0x7f060039;
 		public static final int listMode = 0x7f060001;
-		public static final int list_item = 0x7f06002c;
-		public static final int media_route_control_frame = 0x7f060061;
-		public static final int media_route_disconnect_button = 0x7f060062;
-		public static final int media_route_list = 0x7f06005e;
-		public static final int media_route_volume_layout = 0x7f06005f;
-		public static final int media_route_volume_slider = 0x7f060060;
+		public static final int list_item = 0x7f06003b;
+		public static final int media_route_control_frame = 0x7f060071;
+		public static final int media_route_disconnect_button = 0x7f060072;
+		public static final int media_route_list = 0x7f06006e;
+		public static final int media_route_volume_layout = 0x7f06006f;
+		public static final int media_route_volume_slider = 0x7f060070;
 		public static final int middle = 0x7f060012;
 		public static final int never = 0x7f060009;
 		public static final int none = 0x7f060010;
 		public static final int normal = 0x7f060000;
 		public static final int progress_circular = 0x7f060018;
 		public static final int progress_horizontal = 0x7f060019;
-		public static final int radio = 0x7f060032;
-		public static final int search_badge = 0x7f060035;
-		public static final int search_bar = 0x7f060034;
-		public static final int search_button = 0x7f060036;
-		public static final int search_close_btn = 0x7f06003b;
-		public static final int search_edit_frame = 0x7f060037;
-		public static final int search_go_btn = 0x7f06003d;
-		public static final int search_mag_icon = 0x7f060038;
-		public static final int search_plate = 0x7f060039;
-		public static final int search_src_text = 0x7f06003a;
-		public static final int search_voice_btn = 0x7f06003e;
-		public static final int shortcut = 0x7f060031;
+		public static final int radio = 0x7f060041;
+		public static final int search_badge = 0x7f060044;
+		public static final int search_bar = 0x7f060043;
+		public static final int search_button = 0x7f060045;
+		public static final int search_close_btn = 0x7f06004a;
+		public static final int search_edit_frame = 0x7f060046;
+		public static final int search_go_btn = 0x7f06004c;
+		public static final int search_mag_icon = 0x7f060047;
+		public static final int search_plate = 0x7f060048;
+		public static final int search_src_text = 0x7f060049;
+		public static final int search_voice_btn = 0x7f06004d;
+		public static final int shortcut = 0x7f060040;
 		public static final int showCustom = 0x7f060007;
 		public static final int showHome = 0x7f060004;
 		public static final int showTitle = 0x7f060006;
-		public static final int split_action_bar = 0x7f060021;
-		public static final int submit_area = 0x7f06003c;
+		public static final int split_action_bar = 0x7f060030;
+		public static final int submit_area = 0x7f06004b;
 		public static final int tabMode = 0x7f060002;
-		public static final int title = 0x7f06002e;
-		public static final int top_action_bar = 0x7f060023;
-		public static final int up = 0x7f060024;
+		public static final int title = 0x7f06003d;
+		public static final int top_action_bar = 0x7f060032;
+		public static final int up = 0x7f060033;
 		public static final int useLogo = 0x7f060003;
 		public static final int withText = 0x7f06000c;
 	}
@@ -370,10 +370,10 @@ public final class R {
 		public static final int abc_search_dropdown_item_icons_2line = 0x7f030015;
 		public static final int abc_search_view = 0x7f030016;
 		public static final int abc_simple_decor = 0x7f030017;
-		public static final int mr_media_route_chooser_dialog = 0x7f030023;
-		public static final int mr_media_route_controller_dialog = 0x7f030024;
-		public static final int mr_media_route_list_item = 0x7f030025;
-		public static final int support_simple_spinner_dropdown_item = 0x7f030028;
+		public static final int mr_media_route_chooser_dialog = 0x7f030026;
+		public static final int mr_media_route_controller_dialog = 0x7f030027;
+		public static final int mr_media_route_list_item = 0x7f030028;
+		public static final int support_simple_spinner_dropdown_item = 0x7f03002b;
 	}
 	public static final class string {
 		public static final int abc_action_bar_home_description = 0x7f0b0001;
@@ -389,12 +389,12 @@ public final class R {
 		public static final int abc_searchview_description_voice = 0x7f0b0008;
 		public static final int abc_shareactionprovider_share_with = 0x7f0b000c;
 		public static final int abc_shareactionprovider_share_with_application = 0x7f0b000b;
-		public static final int mr_media_route_button_content_description = 0x7f0b002a;
-		public static final int mr_media_route_chooser_searching = 0x7f0b002c;
-		public static final int mr_media_route_chooser_title = 0x7f0b002b;
-		public static final int mr_media_route_controller_disconnect = 0x7f0b002d;
-		public static final int mr_system_route_name = 0x7f0b0028;
-		public static final int mr_user_route_category_name = 0x7f0b0029;
+		public static final int mr_media_route_button_content_description = 0x7f0b002f;
+		public static final int mr_media_route_chooser_searching = 0x7f0b0031;
+		public static final int mr_media_route_chooser_title = 0x7f0b0030;
+		public static final int mr_media_route_controller_disconnect = 0x7f0b0032;
+		public static final int mr_system_route_name = 0x7f0b002d;
+		public static final int mr_user_route_category_name = 0x7f0b002e;
 	}
 	public static final class style {
 		public static final int TextAppearance_AppCompat_Base_CompactMenu_Dialog = 0x7f0c0063;
@@ -458,8 +458,8 @@ public final class R {
 		public static final int Theme_Base_AppCompat_Light_DialogWhenLarge = 0x7f0c0086;
 		public static final int Theme_Base_AppCompat_Light_DialogWhenLarge_Base = 0x7f0c008a;
 		public static final int Theme_Base_Light = 0x7f0c007f;
-		public static final int Theme_MediaRouter = 0x7f0c008d;
-		public static final int Theme_MediaRouter_Light = 0x7f0c008e;
+		public static final int Theme_MediaRouter = 0x7f0c0091;
+		public static final int Theme_MediaRouter_Light = 0x7f0c0092;
 		public static final int Widget_AppCompat_ActionBar = 0x7f0c0000;
 		public static final int Widget_AppCompat_ActionBar_Solid = 0x7f0c0002;
 		public static final int Widget_AppCompat_ActionBar_TabBar = 0x7f0c0011;
@@ -538,8 +538,8 @@ public final class R {
 		public static final int Widget_AppCompat_ProgressBar = 0x7f0c000a;
 		public static final int Widget_AppCompat_ProgressBar_Horizontal = 0x7f0c0009;
 		public static final int Widget_AppCompat_Spinner_DropDown_ActionBar = 0x7f0c0022;
-		public static final int Widget_MediaRouter_Light_MediaRouteButton = 0x7f0c008c;
-		public static final int Widget_MediaRouter_MediaRouteButton = 0x7f0c008b;
+		public static final int Widget_MediaRouter_Light_MediaRouteButton = 0x7f0c0090;
+		public static final int Widget_MediaRouter_MediaRouteButton = 0x7f0c008f;
 	}
 	public static final class styleable {
 		public static final int[] ActionBar = { 0x7f010025, 0x7f010026, 0x7f010027, 0x7f010028, 0x7f010029, 0x7f01002a, 0x7f01002b, 0x7f01002c, 0x7f01002d, 0x7f01002e, 0x7f01002f, 0x7f010030, 0x7f010031, 0x7f010032, 0x7f010033, 0x7f010034, 0x7f010035, 0x7f010036, 0x7f010037 };
@@ -590,7 +590,7 @@ public final class R {
 		public static final int LinearLayoutICS_divider = 0;
 		public static final int LinearLayoutICS_dividerPadding = 2;
 		public static final int LinearLayoutICS_showDividers = 1;
-		public static final int[] MediaRouteButton = { 0x0101013f, 0x01010140, 0x7f01007f };
+		public static final int[] MediaRouteButton = { 0x0101013f, 0x01010140, 0x7f01008e };
 		public static final int MediaRouteButton_android_minHeight = 1;
 		public static final int MediaRouteButton_android_minWidth = 0;
 		public static final int MediaRouteButton_externalRouteEnabledDrawable = 2;

@@ -12,6 +12,7 @@ import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.cast.MediaInfo;
 import com.google.sample.castcompanionlibrary.cast.VideoCastManager;
@@ -28,6 +29,7 @@ public class CastActivity extends ActionBarActivity {
 	public VideoCastManager mCastManager;
     public IVideoCastConsumer mCastConsumer;
     public MediaInfo mSelectedMedia;
+	public MiniController mMini;
     
     
     private void castInitialize() {
@@ -86,7 +88,7 @@ public class CastActivity extends ActionBarActivity {
         Log.d(tag,"CM:"+mCastManager == null? "null":"not null");
 		 mediaRouteMenuItem = mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
 		
-		// Associate searchable configuration with the SearchView
+		// add Search button
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		MenuItem searchMenuItem = menu.findItem(R.id.action_search);
 		Log.d(tag,"MI:"+searchMenuItem);
@@ -94,19 +96,28 @@ public class CastActivity extends ActionBarActivity {
 		Log.d(tag,"SV:"+searchView);
 		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 		searchView.setIconifiedByDefault(false);
+		
 
 		return true;
 	}
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+    	Intent i;
         switch (item.getItemId()) {
         	case R.id.action_settings: {
         		// Start new activity
-                Intent settingsIntent = new Intent(this.getApplicationContext(), SettingsActivity.class);
-                this.startActivity(settingsIntent);
+                i = new Intent(this.getApplicationContext(), SettingsActivity.class);
+                this.startActivity(i);
         		break;
         	}
+        	case R.id.action_bookmarks: {
+        		// Start new activity
+                i = new Intent(this.getApplicationContext(), BookmarkActivity.class);
+                this.startActivity(i);
+        		break;
+        	}
+        	
         }
         return true;
  }
@@ -117,6 +128,40 @@ public class CastActivity extends ActionBarActivity {
         ActionBar actionBar = getSupportActionBar();
 		castInitialize();
         setupActionBar(actionBar);
+        mCastManager = CastApplication.getCastManager(this);
 	}
+    
+	@Override
+    protected void onResume() {
+        super.onResume();
+		Log.d(tag, "onResume() was called");
+        mCastManager = CastApplication.getCastManager(this);
+        mCastManager.addVideoCastConsumer(mCastConsumer);
+        mCastManager.incrementUiCounter();
+    }
+	
+	@Override
+	protected void onPause() {
+		super.onPause();     		
+		mCastManager.removeVideoCastConsumer(mCastConsumer);
+        mCastManager.decrementUiCounter();
+	}
+	
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    	Log.d(tag, "onDestroy() is called");
+        if (null != mCastManager) {
+            mMini.removeOnMiniControllerChangedListener(mCastManager);        		
+            mCastManager.removeMiniController(mMini);
+            mCastManager.clearContext(this);
+        }  
+    }
+    
+	   public void setupMiniController(View miniView) {
+	        mMini = (MiniController) miniView;
+	        mCastManager.addMiniController(mMini);
+	    }
+
 	
 }

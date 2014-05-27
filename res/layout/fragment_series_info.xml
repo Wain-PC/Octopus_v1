@@ -12,20 +12,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <ImageView
-        android:id="@+id/poster"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_launcher" />
-
-    <TextView
+        
+                <TextView
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/poster"
         android:layout_centerHorizontal="true"
         android:text="TextView" />
+        
+
+    <ImageView
+        android:id="@+id/poster"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_launcher" />
+
+    <Button
+        android:id="@+id/bookmark"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/description"
+        android:text="В закладки" />
+
     </RelativeLayout>
     
 

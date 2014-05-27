@@ -3,10 +3,12 @@
 
     <string name="app_name">Octopus</string>
     <string name="action_settings">Настройки</string>
+    <string name="action_bookmarks">Закладки</string>
     <string name="title_latest">Последние добавленные</string>
     <string name="title_alphabet">По алфавиту</string>
     <string name="title_genres">Жанры</string>
-   
+    <string name="title_bookmarks">Закладки</string>
+    <string name="title_history">История</string>
     <string name="title_series_info">Сериал</string>
     <string name="title_series_episodes">Эпизоды</string>
     <string name="action_search">Поиск</string>

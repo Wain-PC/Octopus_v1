@@ -17,9 +17,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -27,16 +29,15 @@ import android.widget.TextView;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.common.images.WebImage;
-import com.google.sample.castcompanionlibrary.cast.VideoCastManager;
-import com.google.sample.castcompanionlibrary.widgets.MiniController;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.wainpc.octopus.R;
 import com.wainpc.octopus.adapters.SeriesListAdapter;
-import com.wainpc.octopus.asynctasks.JsonSeriesItemLoader;
 import com.wainpc.octopus.asynctasks.RightUrlVideoLoader;
+import com.wainpc.octopus.asynctasks.SeriesItemLoader;
 import com.wainpc.octopus.core.models.EpisodeItem;
 import com.wainpc.octopus.core.models.Series;
 import com.wainpc.octopus.interfaces.AsyncSeriesItemResponse;
+import com.wainpc.octopus.modules.DatabaseBookmarks;
 import com.wainpc.octopus.modules.HttpLoader;
 
 public class SeriesActivity extends BaseFragmentActivity implements
@@ -44,7 +45,7 @@ public class SeriesActivity extends BaseFragmentActivity implements
 
 	public SectionsPagerAdapter spAdapter;
 	public ViewPager viewPager;
-	public JsonSeriesItemLoader loader = null;
+	public SeriesItemLoader loader = null;
 	public static RightUrlVideoLoader urlLoader = null;
 	public static String tag = "myLogs";
 	public static Series series;
@@ -56,8 +57,6 @@ public class SeriesActivity extends BaseFragmentActivity implements
 	public static String urlVideo = "http://173.44.34.162:1337/api/getdirectlink?url=";
 	private static ImageLoader him;
 	public static ProgressDialog progress;
-	private MiniController mMini;
-	private VideoCastManager mCastManager;
 
 	// do something when series is loaded!
 	public void onLoadSeriesSuccess(Series s) {
@@ -106,11 +105,6 @@ public class SeriesActivity extends BaseFragmentActivity implements
 		}
 	}
 	
-	   private void setupMiniController() {
-	        mMini = (MiniController) findViewById(R.id.mc1);
-	        mCastManager.addMiniController(mMini);
-	    }
-	
     private void loadRemoteMedia(MediaInfo media) {
         mCastManager.startCastControllerActivity(this, media, 0, true);
     }
@@ -139,6 +133,7 @@ public class SeriesActivity extends BaseFragmentActivity implements
         
         String contentType = getVideoContentType(episode);
 		String url = getRidOfCORS(directURL, contentType);
+		Log.d(tag,"CHRC_URL:"+url);
 
         return new MediaInfo.Builder(url)
                 .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
@@ -169,7 +164,7 @@ public class SeriesActivity extends BaseFragmentActivity implements
     private static String getRidOfCORS(String url, String provider) {
     	switch(provider) {
     	case "application/x-mpegURL": {
-    		return "http://www.corsproxy.com/"+url;
+    		return url;
     	}
     	default: {
     		return url;
@@ -188,15 +183,13 @@ public class SeriesActivity extends BaseFragmentActivity implements
 		
 		this.resetUI();
 		this.switchToLoadingView();
-		mCastManager = CastApplication.getCastManager(this);
-		setupMiniController();
 		
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		Bundle extras = getIntent().getExtras();
 		seriesId = extras.getString("id");
 		seriesTitle = extras.getString("title");
 		setTitle(seriesTitle);
-		loader = new JsonSeriesItemLoader();
+		loader = new SeriesItemLoader();
 		loader.execute(rootURL + seriesId + "?json=1");
 		loader.delegate = this;		
 		him = ImageLoader.getInstance();
@@ -204,36 +197,10 @@ public class SeriesActivity extends BaseFragmentActivity implements
 	
 	@Override
     protected void onResume() {
-		Log.d(tag, "onResume() was called");
-        mCastManager = CastApplication.getCastManager(this);
-        mCastManager.addVideoCastConsumer(mCastConsumer);
-        mCastManager.incrementUiCounter();
         super.onResume();
+        setupMiniController(findViewById(R.id.mc1));
     }
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		mCastManager.removeVideoCastConsumer(mCastConsumer);
-        mMini.removeOnMiniControllerChangedListener(mCastManager);
-        mCastManager.decrementUiCounter();
-	}
-	
-    @Override
-    public void onDestroy() {
-        if (this.loader != null) {
-            this.loader.cancel(true);
-        }
-        
-        Log.d(tag, "onDestroy() is called");
-        if (null != mCastManager) {
-            mMini.removeOnMiniControllerChangedListener(mCastManager);
-            mCastManager.removeMiniController(mMini);
-            mCastManager.clearContext(this);
-            mCastConsumer = null;
-        }
-        super.onDestroy();
-    }
+    
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -298,12 +265,38 @@ public class SeriesActivity extends BaseFragmentActivity implements
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
+			DatabaseBookmarks db = new DatabaseBookmarks(getActivity());
 			rootView = inflater.inflate(R.layout.fragment_series_info,
 					container, false);
 			ImageView poster = (ImageView) rootView.findViewById(R.id.poster);
 			TextView description = (TextView) rootView
 					.findViewById(R.id.description);
 			description.setText(series.description);
+			
+			Button bookmarkControl = (Button)rootView.findViewById(R.id.bookmark);
+			if (db.isBookmarked(series)) {
+				bookmarkControl.setText("Удалить из закладок");
+			}
+			else {
+				bookmarkControl.setText("Добавить в закладки");				
+			}
+			
+			bookmarkControl.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					DatabaseBookmarks db = new DatabaseBookmarks(getActivity());
+					Button bookmarkControl = (Button)v;
+					if (db.isBookmarked(series)) {
+						db.deleteBookmark(series);
+						bookmarkControl.setText("Добавить в закладки");
+					}
+					else {
+						db.addBookmark(series);
+						bookmarkControl.setText("Удалить из закладок");
+					}
+				}
+			});
+			
 			try {
 				seriesPoster = series.poster.get(series.poster.size()-1); //extremely prone to fail
 				him.displayImage(seriesPoster,

@@ -32,8 +32,7 @@
 
 </android.support.v4.view.ViewPager>
 
-    
-        <com.google.sample.castcompanionlibrary.widgets.MiniController
+                <com.google.sample.castcompanionlibrary.widgets.MiniController
         android:id="@+id/mc1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -41,7 +40,6 @@
         android:background="@drawable/shadow7"
         android:visibility="gone" >
     </com.google.sample.castcompanionlibrary.widgets.MiniController>
-
 </RelativeLayout>
     
     

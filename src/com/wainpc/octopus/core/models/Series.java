@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Series {
+	public String id;
 	public String title_ru; 
 	public String title_en; 
 	public Integer imdbid; 

@@ -14,7 +14,6 @@ public class CastApplication extends Application {
     private static String APPLICATION_ID;
     private static VideoCastManager mCastMgr = null;
     public static final double VOLUME_INCREMENT = 0.05;
-    private static Context mAppContext;
 
     /*
      * (non-Javadoc)
@@ -23,7 +22,6 @@ public class CastApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        mAppContext = getApplicationContext();
         APPLICATION_ID = getString(R.string.pref_cast_app_id);
     }
 
@@ -38,8 +36,7 @@ public class CastApplication extends Application {
 
         }
         mCastMgr.setContext(context);
-        String destroyOnExitStr = "FATALITY!";
-        mCastMgr.setStopOnDisconnect(true);
+        mCastMgr.setStopOnDisconnect(false);
         return mCastMgr;
     }
 

@@ -20,15 +20,21 @@ public class JsonParser {
 	
 	public static ArrayList<EpisodeItem> parseSeriesList(
 			String jsonString) {
+		return parseSeriesList(jsonString, "list");
+		
+	};
+	
+	public static ArrayList<EpisodeItem> parseSeriesList(
+			String jsonString, String listName) {
 
 		try {
-			Log.d(tag, "Parsing JSON!");
+			Log.d(tag, "Parsing JSON! "+listName);
 
 			EpisodeItem map = new EpisodeItem();
 			ArrayList<EpisodeItem> seriesList = new ArrayList<EpisodeItem>();
 			JSONParser parser = new JSONParser();
 			JSONObject r = (JSONObject) parser.parse(jsonString);
-			JSONArray root = (JSONArray) r.get("list");
+			JSONArray root = (JSONArray) r.get(listName);
 			JSONObject jsonSeries, jObj;
 			String title = "";
 			JSONArray posters;
@@ -65,6 +71,10 @@ public class JsonParser {
 			Log.d("myLogs", "Parsing JSON ERROR!" + e);
 			return new ArrayList<EpisodeItem>();
 		}
+		 catch (Exception e) {
+			Log.d("myLogs", "Parsing JSON ERROR!" + e);
+			return new ArrayList<EpisodeItem>();
+		}
 	}
 
 	public static Series parseSeries(String jsonString) {
@@ -76,6 +86,7 @@ public class JsonParser {
 			JSONObject jObj;
 			JSONObject jsonSeries = (JSONObject) parser.parse(jsonString);
 
+			series.id = (String) Long.toString((Long) jsonSeries.get("id"));
 			series.title_ru = (String) jsonSeries.get("title_ru");
 			series.title_en = (String) jsonSeries.get("title_en");
 			series.description = (String) jsonSeries.get("description");
@@ -102,6 +113,10 @@ public class JsonParser {
 
 			return series;
 		} catch (ParseException e) {
+			Log.d("myLogs", "Parsing JSON ERROR!" + e);
+			return null;
+		}
+		catch (Exception e) {
 			Log.d("myLogs", "Parsing JSON ERROR!" + e);
 			return null;
 		}
@@ -187,7 +202,7 @@ public class JsonParser {
 				genre.id = id;
 				genre.title_ru = title_ru;
 				genre.title_en = title_en;
-				
+				//
 				genreList.add(genre);
 				} catch (NullPointerException e) {
 					Log.d(tag, "(1)Null pointer for " + i);
@@ -200,6 +215,10 @@ public class JsonParser {
 			Log.d(tag,"Returning genreList with items:"+genreList.size());
 			return genreList;
 		} catch (ParseException e) {
+			Log.d("myLogs", "Parsing JSON ERROR!" + e);
+			return genreList;
+		}
+		catch (Exception e) {
 			Log.d("myLogs", "Parsing JSON ERROR!" + e);
 			return genreList;
 		}

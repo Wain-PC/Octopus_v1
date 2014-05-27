@@ -20,8 +20,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.google.sample.castcompanionlibrary.cast.VideoCastManager;
-import com.google.sample.castcompanionlibrary.widgets.MiniController;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -29,8 +27,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.wainpc.octopus.R;
 import com.wainpc.octopus.adapters.GenresListAdapter;
 import com.wainpc.octopus.adapters.SeriesListAdapter;
-import com.wainpc.octopus.asynctasks.JsonGenresListLoader;
-import com.wainpc.octopus.asynctasks.JsonSeriesListLoader;
+import com.wainpc.octopus.asynctasks.GenresListLoader;
+import com.wainpc.octopus.asynctasks.SeriesListLoader;
 import com.wainpc.octopus.core.models.EpisodeItem;
 import com.wainpc.octopus.core.models.Genre;
 import com.wainpc.octopus.interfaces.MainActivityInterface;
@@ -43,15 +41,13 @@ public class MainActivity extends BaseFragmentActivity implements
 	public ViewPager mViewPager;
 	public static String tag = "myLogs";
 	private static ImageLoader him;
-	private JsonSeriesListLoader latestSeriesLoader = null;
-	private JsonGenresListLoader genreListLoader = null;
+	private SeriesListLoader latestSeriesLoader = null;
+	private GenresListLoader genreListLoader = null;
 	public static ArrayList<EpisodeItem> seriesList = new ArrayList<EpisodeItem>();
 	public static ArrayList<Genre> genreList = new ArrayList<Genre>();
 	public HashMap<String, String> map;
 	public String latestSeriesURL = "http://173.44.34.162:1337/latest?json=1";
 	public String genresURL = "http://173.44.34.162:1337/genres?json=1";
-	private VideoCastManager mCastManager;
-	private MiniController mMini;
 	
 	// success handler on
 	public void onLoadLatestSeriesSuccess(ArrayList<EpisodeItem> data) {
@@ -64,7 +60,7 @@ public class MainActivity extends BaseFragmentActivity implements
 			seriesList = data;
 			
 			//load genres then
-			genreListLoader = new JsonGenresListLoader();
+			genreListLoader = new GenresListLoader();
 			genreListLoader.execute(genresURL);
 			genreListLoader.delegate = this;
 					
@@ -109,12 +105,6 @@ public class MainActivity extends BaseFragmentActivity implements
 
  		him.init(himConfig);
      }
-     
-	   private void setupMiniController() {
-	        mMini = (MiniController) findViewById(R.id.mc1);
-	        mCastManager.addMiniController(mMini);
-	    }
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {	
@@ -122,45 +112,24 @@ public class MainActivity extends BaseFragmentActivity implements
 		this.resetUI();
 		this.switchToLoadingView();
 		loadImageManager();
-		mCastManager = CastApplication.getCastManager(this);
-		setupMiniController();
 
 		// make async request
 		Log.d(tag, "make async request");
-		latestSeriesLoader = new JsonSeriesListLoader();
+		latestSeriesLoader = new SeriesListLoader();
 		latestSeriesLoader.execute(latestSeriesURL);
 		latestSeriesLoader.delegate = this;
 	}
 	
 	@Override
     protected void onResume() {
-		Log.d(tag, "onResume() was called");
-        mCastManager = CastApplication.getCastManager(this);
-        mCastManager.addVideoCastConsumer(mCastConsumer);
-        mCastManager.incrementUiCounter();
         super.onResume();
+        setupMiniController(findViewById(R.id.mc1));
     }
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		mCastManager.removeVideoCastConsumer(mCastConsumer);
-        mMini.removeOnMiniControllerChangedListener(mCastManager);
-        mCastManager.decrementUiCounter();
-	}
 	
     @Override
     public void onDestroy() {
         if (this.latestSeriesLoader != null) {
             this.latestSeriesLoader.cancel(true);
-        }
-        
-        Log.d(tag, "onDestroy() is called");
-        if (null != mCastManager) {
-            mMini.removeOnMiniControllerChangedListener(mCastManager);
-            mCastManager.removeMiniController(mMini);
-            mCastManager.clearContext(this);
-            mCastConsumer = null;
         }
         super.onDestroy();  
     }
