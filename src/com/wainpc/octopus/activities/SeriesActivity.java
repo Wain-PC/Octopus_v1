@@ -11,11 +11,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -25,6 +23,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
@@ -38,6 +37,7 @@ import com.wainpc.octopus.core.models.EpisodeItem;
 import com.wainpc.octopus.core.models.Series;
 import com.wainpc.octopus.interfaces.AsyncSeriesItemResponse;
 import com.wainpc.octopus.modules.DatabaseBookmarks;
+import com.wainpc.octopus.modules.DatabaseHistory;
 import com.wainpc.octopus.modules.HttpLoader;
 
 public class SeriesActivity extends BaseFragmentActivity implements
@@ -57,6 +57,7 @@ public class SeriesActivity extends BaseFragmentActivity implements
 	public static String urlVideo = "http://173.44.34.162:1337/api/getdirectlink?url=";
 	private static ImageLoader him;
 	public static ProgressDialog progress;
+	public static DatabaseHistory db;
 
 	// do something when series is loaded!
 	public void onLoadSeriesSuccess(Series s) {
@@ -87,6 +88,10 @@ public class SeriesActivity extends BaseFragmentActivity implements
 		}
 		else {
 			progress.dismiss();
+			
+			//add to history
+			db.addHistoryItem(series, selectedEpisode);
+			
 			//remote play
 			try {
                 mCastManager.checkConnectivity();
@@ -183,12 +188,11 @@ public class SeriesActivity extends BaseFragmentActivity implements
 		
 		this.resetUI();
 		this.switchToLoadingView();
-		
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		db = new DatabaseHistory(this);
 		Bundle extras = getIntent().getExtras();
 		seriesId = extras.getString("id");
 		seriesTitle = extras.getString("title");
-		setTitle(seriesTitle);
+		getActionBar().setTitle(seriesTitle);
 		loader = new SeriesItemLoader();
 		loader.execute(rootURL + seriesId + "?json=1");
 		loader.delegate = this;		
@@ -201,17 +205,6 @@ public class SeriesActivity extends BaseFragmentActivity implements
         setupMiniController(findViewById(R.id.mc1));
     }
     
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
 
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -282,19 +275,28 @@ public class SeriesActivity extends BaseFragmentActivity implements
 			}
 			
 			bookmarkControl.setOnClickListener(new OnClickListener() {
+			   
 				@Override
 				public void onClick(View v) {
 					DatabaseBookmarks db = new DatabaseBookmarks(getActivity());
 					Button bookmarkControl = (Button)v;
 					if (db.isBookmarked(series)) {
 						db.deleteBookmark(series);
+						showToast(R.string.toast_bookmarks_removed);
 						bookmarkControl.setText("Добавить в закладки");
 					}
 					else {
 						db.addBookmark(series);
+						showToast(R.string.toast_bookmarks_added);
 						bookmarkControl.setText("Удалить из закладок");
 					}
 				}
+				
+				public void showToast(int stringResource) {
+			    	Toast.makeText(getActivity().getApplicationContext(), getString(stringResource), 
+			    			   Toast.LENGTH_LONG).show();
+			    	}
+				
 			});
 			
 			try {

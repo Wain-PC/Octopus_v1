@@ -25,6 +25,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.wainpc.octopus.R;
+import com.wainpc.octopus.adapters.AlphabetListAdapter;
 import com.wainpc.octopus.adapters.GenresListAdapter;
 import com.wainpc.octopus.adapters.SeriesListAdapter;
 import com.wainpc.octopus.asynctasks.GenresListLoader;
@@ -92,9 +93,9 @@ public class MainActivity extends BaseFragmentActivity implements
  				.cacheInMemory(true)
  				.cacheOnDisc(true)
  				// @TODO: move this to settings
- 				.showImageForEmptyUri(R.drawable.ic_launcher)
+ 				.showImageForEmptyUri(R.drawable.error_image)
  				.showImageOnLoading(R.drawable.ic_launcher)
- 				.showImageOnFail(R.drawable.ic_launcher).build();
+ 				.showImageOnFail(R.drawable.error_image).build();
  		ImageLoaderConfiguration himConfig = new ImageLoaderConfiguration.Builder(
  				getBaseContext()).defaultDisplayImageOptions(himOptions)
  				.memoryCache(new LruMemoryCache(10 * 1024 * 1024)) // @TODO:
@@ -154,13 +155,17 @@ public class MainActivity extends BaseFragmentActivity implements
 				f = new GenresFragment();
 				break;
 			}
+			case 2: {
+				f = new AlphabetFragment();
+				break;
+			}
 			}
 			return f;
 		}
 		@Override
 		public int getCount() {
 			// Show 3 total pages.
-			return 2;
+			return 3;
 		}
 
 		@Override
@@ -171,7 +176,8 @@ public class MainActivity extends BaseFragmentActivity implements
 				return getString(R.string.title_latest).toUpperCase(l);
 			case 1:
 				return getString(R.string.title_genres).toUpperCase(l);
-		
+			case 2:
+				return getString(R.string.title_alphabet).toUpperCase(l);
 			}
 			return null;
 		}
@@ -269,14 +275,13 @@ public class MainActivity extends BaseFragmentActivity implements
 					.setOnItemClickListener(new OnItemClickListener() {
 						public void onItemClick(AdapterView<?> parent,
 								View view, int position, long id) {
-							String genreId = genreList.get(position).id;
-							Log.d(tag,"GENRE_ID:"+genreId);
 							// open series page
-//							Intent seriesPage = new Intent(getActivity()
-//									.getApplicationContext(),
-//									SeriesActivity.class);
-//							seriesPage.putExtra("id", genreId);
-//							startActivity(seriesPage);
+							Intent genrePage = new Intent(getActivity()
+									.getApplicationContext(),
+									GenreActivity.class);
+							genrePage.putExtra("id", genreList.get(position).id);
+							genrePage.putExtra("title", genreList.get(position).title_ru);
+							startActivity(genrePage);
 						}
 					});
 			
@@ -284,6 +289,54 @@ public class MainActivity extends BaseFragmentActivity implements
 		}
 	}
 	//----END FRAGMENT-------------------------------------------
+	
+	
+	// Fragment---------------------------------------------------------------------
+		public static class AlphabetFragment extends Fragment {
+
+			
+			public AlphabetListAdapter listAdapter;
+			View rootView;
+			ListView listViewFragmentMain;
+			String[] alphArray = {"À","Á","Â","Ã","Ä","Å","Æ","Ç","È","Ê","Ë","Ì","Í",
+					"Î","Ï","Ð","Ñ","Ò","Ó","Ô","Õ","Ö","×","Ø","Ù","Ý","Þ","ß"};
+
+			public AlphabetFragment() {
+			}
+
+			// View---------------------------------------------------------------------
+			@Override
+			public View onCreateView(LayoutInflater inflater, ViewGroup container,
+					Bundle savedInstanceState) {
+				
+				rootView = inflater.inflate(R.layout.fragment_list, container,
+						false);
+				
+			    
+				listViewFragmentMain = (ListView) rootView
+						.findViewById(R.id.listView_fragment_main);
+				listAdapter = new AlphabetListAdapter(getActivity(), alphArray);
+				listViewFragmentMain.setAdapter(listAdapter);
+
+				
+				listViewFragmentMain
+						.setOnItemClickListener(new OnItemClickListener() {
+							public void onItemClick(AdapterView<?> parent,
+									View view, int position, long id) {
+								String letter = alphArray[position];
+
+								Intent alphabetPage = new Intent(getActivity()
+										.getApplicationContext(),
+										AlphabetActivity.class);
+								alphabetPage.putExtra("letter", letter);
+								startActivity(alphabetPage);
+							}
+						});
+				
+				return rootView;
+			}
+		}
+		//----END FRAGMENT-------------------------------------------
 
 }
 //----END ACTIVITY----------------------------------------------

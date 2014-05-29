@@ -21,7 +21,7 @@ import com.google.sample.castcompanionlibrary.cast.callbacks.VideoCastConsumerIm
 import com.google.sample.castcompanionlibrary.widgets.MiniController;
 import com.wainpc.octopus.R;
 
-public class CastActivity extends ActionBarActivity {
+public abstract class CastActivity extends ActionBarActivity {
 	
 	//Cast variables
 	public static String tag = "myLogs";
@@ -30,6 +30,7 @@ public class CastActivity extends ActionBarActivity {
     public IVideoCastConsumer mCastConsumer;
     public MediaInfo mSelectedMedia;
 	public MiniController mMini;
+	private int menuResource = R.menu.main;
     
     
     private void castInitialize() {
@@ -58,15 +59,6 @@ public class CastActivity extends ActionBarActivity {
             public void onCastDeviceDetected(final RouteInfo info) {
 
                     Log.d(tag, "Route is visible: " + info);
-                    new Handler().postDelayed(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            if (mediaRouteMenuItem.isVisible()) {
-                                Log.d(tag, "Cast Icon is visible: " + info.getName());
-                            }
-                        }
-                    }, 1000);
                 }
             };
             mCastManager.reconnectSessionIfPossible(this, false);
@@ -75,14 +67,14 @@ public class CastActivity extends ActionBarActivity {
     
     private void setupActionBar(ActionBar actionBar) {
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setIcon(R.drawable.ic_dialog_alert);
+        actionBar.setIcon(R.drawable.ic_launcher);
         actionBar.setTitle(R.string.app_name);
     }
     
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(menuResource, menu);
 
 		//add Cast button
         Log.d(tag,"CM:"+mCastManager == null? "null":"not null");
@@ -91,36 +83,12 @@ public class CastActivity extends ActionBarActivity {
 		// add Search button
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		MenuItem searchMenuItem = menu.findItem(R.id.action_search);
-		Log.d(tag,"MI:"+searchMenuItem);
 		SearchView searchView = (SearchView) searchMenuItem.getActionView();
-		Log.d(tag,"SV:"+searchView);
 		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-		searchView.setIconifiedByDefault(false);
-		
+		searchView.setIconifiedByDefault(true);		
 
 		return true;
 	}
-    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-    	Intent i;
-        switch (item.getItemId()) {
-        	case R.id.action_settings: {
-        		// Start new activity
-                i = new Intent(this.getApplicationContext(), SettingsActivity.class);
-                this.startActivity(i);
-        		break;
-        	}
-        	case R.id.action_bookmarks: {
-        		// Start new activity
-                i = new Intent(this.getApplicationContext(), BookmarkActivity.class);
-                this.startActivity(i);
-        		break;
-        	}
-        	
-        }
-        return true;
- }
     
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -158,10 +126,43 @@ public class CastActivity extends ActionBarActivity {
         }  
     }
     
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	super.onOptionsItemSelected(item);
+    	
+    	Intent i;
+        switch (item.getItemId()) {
+        	case R.id.action_settings: {
+        		// Start new activity
+                i = new Intent(this.getApplicationContext(), SettingsActivity.class);
+                this.startActivity(i);
+        		break;
+        	}
+        	case R.id.action_bookmarks: {
+        		// Start new activity
+                i = new Intent(this.getApplicationContext(), BookmarkActivity.class);
+                this.startActivity(i);
+        		break;
+        	}
+        	
+        	case R.id.action_history: {
+        		// Start new activity
+                i = new Intent(this.getApplicationContext(), HistoryActivity.class);
+                this.startActivity(i);
+        		break;
+        	}        	
+        }
+        return true;
+ }
+    
 	   public void setupMiniController(View miniView) {
 	        mMini = (MiniController) miniView;
 	        mCastManager.addMiniController(mMini);
 	    }
+	   
+	   public void setupMenu(int resource) {
+		   menuResource = resource;
+	   }
 
 	
 }

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.hb.views.PinnedSectionListView.PinnedSectionListAdapter;
 import com.wainpc.octopus.R;
 import com.wainpc.octopus.core.models.Bookmark;
+import com.wainpc.octopus.core.models.HistoryItem;
 
 public class BookmarkListAdapter extends BaseAdapter implements
 		PinnedSectionListAdapter {
@@ -33,6 +34,10 @@ public class BookmarkListAdapter extends BaseAdapter implements
 		context = activity.getApplicationContext();
 	}
 
+	public void refreshDataset(ArrayList<Bookmark> items) {
+	    this.data = items;
+	    notifyDataSetChanged();
+	}
 
 	public int getCount() {
 		return data.size();
@@ -57,7 +62,7 @@ public class BookmarkListAdapter extends BaseAdapter implements
 
 			// it's a normal item
 			if (getItemViewType(position) == 0) {
-				vi = inflater.inflate(R.layout.bookmarklistadapter_item, null);
+				vi = inflater.inflate(R.layout.simplelistadapter_item, null);
 				holder.title = (TextView) vi.findViewById(R.id.title); // title
 				vi.setTag(holder);
 

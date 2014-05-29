@@ -17,7 +17,7 @@ public class DatabaseBookmarks extends SQLiteOpenHelper {
  
 	private static String tag = "myLogs";
     // Database Version
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 5;
     // Database Name
     private static final String DATABASE_NAME = "octopus";
  
@@ -161,6 +161,12 @@ public class DatabaseBookmarks extends SQLiteOpenHelper {
         db.close();
  
         Log.d(tag, "deleteBookmark"+ series.id);
- 
+    }
+    
+    public void deleteAllBookmarks() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_BOOKMARKS,null,null);
+        db.close();
+        Log.d(tag, "deleteAllBookmarks");
     }
 }

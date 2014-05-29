@@ -4,6 +4,9 @@
     <string name="app_name">Octopus</string>
     <string name="action_settings">Настройки</string>
     <string name="action_bookmarks">Закладки</string>
+    <string name="action_history">История</string>
+    <string name="action_purge_history">Очистить историю</string>
+    <string name="action_purge_bookmarks">Удалить все закладки</string>
     <string name="title_latest">Последние добавленные</string>
     <string name="title_alphabet">По алфавиту</string>
     <string name="title_genres">Жанры</string>
@@ -14,6 +17,19 @@
     <string name="action_search">Поиск</string>
     <string name="search_hint">Введите название сериала</string>
     <string name="loading">Загрузка</string>
+    
+    
+    <!-- Dialogs -->
+    <string name="dialog_purge_history_header">Очистить историю?</string>
+    <string name="dialog_purge_history_title">Вся история просмотра будет удалена!</string>
+    <string name="dialog_purge_ok">Очистить</string>
+    
+    <string name="dialog_purge_bookmarks_header">Очистить список закладок?</string>
+    <string name="dialog_purge_bookmarks_title">Все закладки будут удалены!</string>
+    
+    <!-- Toasts -->
+    <string name="toast_bookmarks_added">Сериал добавлен в закладки</string>
+    <string name="toast_bookmarks_removed">Сериал удален из закладок</string>
     
     <!-- Preferences -->
     <string name="pref_category">Основные</string>
@@ -35,5 +51,8 @@
     <string name="error_no_api_available">Отсутствует этот метод обращения к JSON API.</string>
     <string name="error_list_empty">Список пуст.</string>
     <string name="error_no_direct_video_url">Не удалось получить видео.</string>
+    
+    <string name="error_list_history_empty">В истории пока ничего нет.</string>
+    <string name="error_list_bookmarks_empty">Список закладок пуст. Добавьте закладки со страницы любого сериала</string>
     
 </resources>

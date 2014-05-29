@@ -3,6 +3,8 @@ package com.wainpc.octopus.activities;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +13,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -27,21 +30,30 @@ public class BookmarkActivity extends BaseFragmentActivity {
 	public SectionsPagerAdapter spAdapter;
 	public ViewPager viewPager;
 	public static ArrayList<Bookmark> bookmarkList;
+	public static BookmarkListAdapter listAdapter;
+	public DatabaseBookmarks db;
 	
 	
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_simple_list;
     }
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {	
 		super.onCreate(savedInstanceState);
+		getActionBar().setTitle(getString(R.string.action_bookmarks));
+		this.setupMenu(R.menu.bookmark);
 		this.resetUI();
 		this.switchToLoadingView();
 		setupMiniController(findViewById(R.id.mc1));
-		DatabaseBookmarks db = new DatabaseBookmarks(this);
+		db = new DatabaseBookmarks(this);
 		bookmarkList = db.getAllBookmarks();
+		if(bookmarkList.size() == 0) {
+			Log.d(tag,"----------Nothing found on the list!");
+			this.switchToErrorView(getString(R.string.error_list_bookmarks_empty));
+			return;
+		}
 		spAdapter = new SectionsPagerAdapter(
 				getSupportFragmentManager());
 		// Set up the ViewPager with the sections adapter.
@@ -66,6 +78,39 @@ public class BookmarkActivity extends BaseFragmentActivity {
     public void onDestroy() {
         super.onDestroy();  
     }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	super.onOptionsItemSelected(item);
+    	
+        switch (item.getItemId()) {
+        	case R.id.action_purge_bookmarks: {
+        		// Purge all טששכüפךכû
+        		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        		builder.setTitle(R.string.dialog_purge_bookmarks_header);
+        		builder.setMessage(R.string.dialog_purge_bookmarks_title);
+        		builder.setCancelable(true);
+        		builder.setPositiveButton(R.string.dialog_purge_ok, new DialogInterface.OnClickListener() {
+        		    @Override
+        		    public void onClick(DialogInterface dialog, int which) {
+        		    	db.deleteAllBookmarks();
+        		    	listAdapter.refreshDataset(db.getAllBookmarks());
+        		        dialog.dismiss();				
+        		    }
+        		});
+        		builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+        		    @Override
+        		    public void onClick(DialogInterface dialog, int which) {
+        		        dialog.dismiss();				
+        		    }
+        		});
+        		AlertDialog dialog = builder.create();
+        		dialog.show();
+        		break;
+        	}       	
+        }
+        return true;
+ }
 	
 	// Adapter---------------------------------------------------------------------
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -76,45 +121,24 @@ public class BookmarkActivity extends BaseFragmentActivity {
 
 		@Override
 		public Fragment getItem(int position) {
-			Fragment f = null;
-			switch (position) {
-			case 0: {
-				f = new BookmarksFragment();
-				break;
-			}
-			case 1: {
-				f = new BookmarksFragment();
-				break;
-			}
-			}
-			return f;
+			return new BookmarksFragment();
 		}
 		@Override
 		public int getCount() {
-			// Show 3 total pages.
-			return 2;
+			return 1;
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
 			Locale l = Locale.getDefault();
-			switch (position) {
-			case 0:
-				return getString(R.string.title_latest).toUpperCase(l);
-			case 1:
-				return getString(R.string.title_genres).toUpperCase(l);
-		
-			}
-			return null;
-		}
+			return getString(R.string.title_latest).toUpperCase(l);
+	}
 	}
 	
 	
 	// Fragment---------------------------------------------------------------------
 		public static class BookmarksFragment extends Fragment {
 
-			
-			public BookmarkListAdapter listAdapter;
 			View rootView;
 			ListView listView;
 

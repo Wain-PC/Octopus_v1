@@ -21,10 +21,8 @@ import android.widget.ListView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.wainpc.octopus.R;
-import com.wainpc.octopus.activities.SeriesActivity.SectionsPagerAdapter;
 import com.wainpc.octopus.adapters.SeriesListAdapter;
 import com.wainpc.octopus.asynctasks.SearchExecutor;
-import com.wainpc.octopus.asynctasks.SeriesListLoader;
 import com.wainpc.octopus.core.models.EpisodeItem;
 import com.wainpc.octopus.interfaces.AsyncSeriesListResponse;
 import com.wainpc.octopus.modules.HttpLoader;
@@ -40,7 +38,7 @@ public class SearchActivity extends BaseFragmentActivity implements AsyncSeriesL
 	
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_search;
+        return R.layout.activity_simple_list;
     }
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +55,7 @@ public class SearchActivity extends BaseFragmentActivity implements AsyncSeriesL
 			Log.d(tag, "query=" + query);
 			loader.execute(rootURL + HttpLoader.encodeURIComponent(query));
 			loader.delegate = this;
-			setTitle(query);
+			getActionBar().setTitle(query);
 		}
 	}
 	
@@ -88,14 +86,12 @@ public class SearchActivity extends BaseFragmentActivity implements AsyncSeriesL
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
 	    switch (item.getItemId()) {
 	        case android.R.id.home:
-	            // app icon in action bar clicked; goto parent activity.
 	            this.finish();
-	            return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
 	    }
+	    return true;
 	}
 	
 	// Adapter---------------------------------------------------------------------
@@ -124,7 +120,7 @@ public class SearchActivity extends BaseFragmentActivity implements AsyncSeriesL
 		@Override
 		public CharSequence getPageTitle(int position) {
 			Locale l = Locale.getDefault();
-			return getString(R.string.title_latest).toUpperCase(l);
+			return getString(R.string.action_search).toUpperCase(l);
 		}
 	}
 	

@@ -53,7 +53,7 @@ public class GenresListAdapter extends BaseAdapter implements
 		if (vi == null) {
 			holder = new ViewHolder();
 
-				vi = inflater.inflate(R.layout.serieslistadapter_header, null);
+				vi = inflater.inflate(R.layout.simplelistadapter_item, null);
 				holder.title = (TextView) vi.findViewById(R.id.title); // title
 				vi.setTag(holder);
 
