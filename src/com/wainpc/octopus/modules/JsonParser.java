@@ -1,7 +1,6 @@
 package com.wainpc.octopus.modules;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,6 +12,7 @@ import android.util.Log;
 import com.wainpc.octopus.core.models.EpisodeItem;
 import com.wainpc.octopus.core.models.Genre;
 import com.wainpc.octopus.core.models.Series;
+import com.wainpc.octopus.core.models.Video;
 
 public class JsonParser {
 	
@@ -163,11 +163,13 @@ public class JsonParser {
 							episode.put("type", "ep");
 							
 							jVideo = (JSONArray) jE.get("video");
+							Video v;
 							for(k=0;k<jVideo.size();k++) {
 								jV = (JSONObject) jVideo.get(k);
-								episode.put("url", (String) jV.get("url"));
-								episode.put("videoType", (String) jV.get("type"));
-								break; //dead code warning is caused by this string. This only gets the first video from the list (temp solution) 
+								v = new Video();
+								v.url = (String) jV.get("url");
+								v.type = (String) jV.get("type");
+								episode.video.add(v);
 							}
 							//add episode to list
 							episodeList.add(episode);

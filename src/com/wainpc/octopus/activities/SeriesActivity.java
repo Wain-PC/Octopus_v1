@@ -1,7 +1,10 @@
 package com.wainpc.octopus.activities;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
@@ -14,11 +17,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -35,6 +41,7 @@ import com.wainpc.octopus.asynctasks.RightUrlVideoLoader;
 import com.wainpc.octopus.asynctasks.SeriesItemLoader;
 import com.wainpc.octopus.core.models.EpisodeItem;
 import com.wainpc.octopus.core.models.Series;
+import com.wainpc.octopus.core.models.Video;
 import com.wainpc.octopus.interfaces.AsyncSeriesItemResponse;
 import com.wainpc.octopus.modules.DatabaseBookmarks;
 import com.wainpc.octopus.modules.DatabaseHistory;
@@ -185,7 +192,7 @@ public class SeriesActivity extends BaseFragmentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		setupMenu(R.menu.series);
 		this.resetUI();
 		this.switchToLoadingView();
 		db = new DatabaseHistory(this);
@@ -193,6 +200,7 @@ public class SeriesActivity extends BaseFragmentActivity implements
 		seriesId = extras.getString("id");
 		seriesTitle = extras.getString("title");
 		getActionBar().setTitle(seriesTitle);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		loader = new SeriesItemLoader();
 		loader.execute(rootURL + seriesId + "?json=1");
 		loader.delegate = this;		
@@ -204,6 +212,21 @@ public class SeriesActivity extends BaseFragmentActivity implements
         super.onResume();
         setupMiniController(findViewById(R.id.mc1));
     }
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+	    switch (menuItem.getItemId()) {
+	    case android.R.id.home: {
+	    	onBackPressed();
+	    	break;
+	    	}
+	    case R.id.action_claim: {
+	    	AlertDialog claimDialog = createClaimDialog();
+	    	claimDialog.show();
+	    }
+	    }
+	  return (super.onOptionsItemSelected(menuItem));
+	}
     
 
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -338,37 +361,124 @@ public class SeriesActivity extends BaseFragmentActivity implements
 					.setOnItemClickListener(new OnItemClickListener() {
 						public void onItemClick(AdapterView<?> parent,
 								View view, int position, long id) {
-
-							//prepare and send request to acquire direct video URL (or HLS stream)
 							selectedEpisode = series.getListArrayOfEpisodes().get(position);
-							String videoUrl = selectedEpisode.get("url").toString();
-							videoUrl = HttpLoader.encodeURIComponent(videoUrl);
-							
-							//set loading state
-							progress = new ProgressDialog(getActivity());
-							progress.setMessage(getString(R.string.loading));
-							progress.setCancelable(true);
-						    progress.setOnCancelListener(new OnCancelListener() {
-
-						        @Override
-						        public void onCancel(DialogInterface dialog) {
-						        	//when the loading Episode window has been canceled
-						        	//we should stop the related loader asynctask
-						            if (urlLoader != null) {
-						            	urlLoader.cancel(true);
-						            }
-						        }
-						    });
-							progress.show();
-							
-							//execute the request
-							urlLoader = new RightUrlVideoLoader();
-							urlLoader.execute(urlVideo + videoUrl);
-							urlLoader.delegate = (AsyncSeriesItemResponse) getActivity();
+							AlertDialog selectVideoSourceDialog = createVideoListDialog();
+							selectVideoSourceDialog.show();
 						}
 					});
 			return rootView;
 		}
+		
+		public AlertDialog createVideoListDialog() {
+			
+			//create an adapter
+			ArrayList<Video> items = selectedEpisode.video;
+			ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                    getActivity(),
+                    android.R.layout.select_dialog_item);
+			//fill an adapter with choices
+			String title = "";
+			for (Video v : items) {
+				switch(v.type) {
+				case "vk": {
+					title = getString(R.string.dialog_series_videolist_vk);
+					break;
+				}
+				case "hls": {
+					title = getString(R.string.dialog_series_videolist_hls);
+					break;
+				}
+				}
+				arrayAdapter.add(title);
+			}
+			
+			DialogInterface.OnClickListener itemClicklistener = new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int position) {
+					//do all stuff to get direct link and show choosePlayer dialog
+					//prepare and send request to acquire direct video URL (or HLS stream)
+					String videoUrl = selectedEpisode.video.get(position).url.toString();
+					videoUrl = HttpLoader.encodeURIComponent(videoUrl);
+					
+					//set loading state
+					progress = new ProgressDialog(getActivity());
+					progress.setMessage(getString(R.string.operation_loading));
+					progress.setCancelable(true);
+				    progress.setOnCancelListener(new OnCancelListener() {
+
+				        @Override
+				        public void onCancel(DialogInterface dialog) {
+				        	//when the loading Episode window has been canceled
+				        	//we should stop the related loader asynctask
+				            if (urlLoader != null) {
+				            	urlLoader.cancel(true);
+				            }
+				        }
+				    });
+					progress.show();
+					
+					//execute the request
+					urlLoader = new RightUrlVideoLoader();
+					urlLoader.execute(urlVideo + videoUrl);
+					urlLoader.delegate = (AsyncSeriesItemResponse) getActivity();
+				}
+			};
+			
+			DialogInterface.OnClickListener cancelClicklistener = new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			};
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		    builder.setTitle(R.string.dialog_series_videolist_title)
+		           .setAdapter(arrayAdapter, itemClicklistener)
+		           .setNegativeButton(android.R.string.cancel, cancelClicklistener);
+		    return builder.create();
+		}
+	}
+	
+	public AlertDialog createClaimDialog() {
+		
+		//create an adapter
+		final Activity a = this;
+		LayoutInflater inflater = this.getLayoutInflater();
+		 // Pass null as the parent view because its going in the dialog layout
+		View claimDialogView = inflater.inflate(R.layout.dialog_claim, null);
+		
+		//SEND click listener
+		DialogInterface.OnClickListener sendClicklistener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				//do stuff prior to sending the claim
+				progress = new ProgressDialog(a);
+				progress.setMessage(getString(R.string.operation_sending));
+				progress.setCancelable(true);
+				progress.show();
+				
+				//execute the request
+				/*urlLoader = new RightUrlVideoLoader();
+				urlLoader.execute(urlVideo + videoUrl);
+				urlLoader.delegate = (AsyncSeriesItemResponse) a;*/
+			}
+		};
+		
+		//Cancel click listener
+		DialogInterface.OnClickListener cancelClicklistener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		};
+		
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(a);
+	    builder.setTitle(R.string.dialog_series_claim_title)
+	    	.setView(claimDialogView)
+	        .setNegativeButton(android.R.string.cancel, cancelClicklistener)
+	    	.setPositiveButton(R.string.dialog_series_claim_send, sendClicklistener);
+	    return builder.create();
 	}
 
 }

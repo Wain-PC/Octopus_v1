@@ -85,7 +85,7 @@ public class BookmarkActivity extends BaseFragmentActivity {
     	
         switch (item.getItemId()) {
         	case R.id.action_purge_bookmarks: {
-        		// Purge all טששכüפךכû
+        		// Purge all bookmarks
         		AlertDialog.Builder builder = new AlertDialog.Builder(this);
         		builder.setTitle(R.string.dialog_purge_bookmarks_header);
         		builder.setMessage(R.string.dialog_purge_bookmarks_title);

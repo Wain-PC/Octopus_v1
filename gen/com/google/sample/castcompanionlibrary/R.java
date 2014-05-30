@@ -441,7 +441,7 @@ public final class R {
 		public static final int activity_chooser_view_content = 0x7f060037;
 		public static final int always = 0x7f06000b;
 		public static final int beginning = 0x7f060011;
-		public static final int bigContainer = 0x7f06006d;
+		public static final int bigContainer = 0x7f06006f;
 		public static final int book_now = 0x7f060028;
 		public static final int buyButton = 0x7f060022;
 		public static final int buy_now = 0x7f060027;
@@ -477,12 +477,12 @@ public final class R {
 		public static final int liveText = 0x7f060057;
 		public static final int loadingView = 0x7f060062;
 		public static final int match_parent = 0x7f060024;
-		public static final int media_route_control_frame = 0x7f060071;
-		public static final int media_route_disconnect_button = 0x7f060072;
-		public static final int media_route_list = 0x7f06006e;
-		public static final int media_route_menu_item = 0x7f060074;
-		public static final int media_route_volume_layout = 0x7f06006f;
-		public static final int media_route_volume_slider = 0x7f060070;
+		public static final int media_route_control_frame = 0x7f060073;
+		public static final int media_route_disconnect_button = 0x7f060074;
+		public static final int media_route_list = 0x7f060070;
+		public static final int media_route_menu_item = 0x7f060076;
+		public static final int media_route_volume_layout = 0x7f060071;
+		public static final int media_route_volume_slider = 0x7f060072;
 		public static final int middle = 0x7f060012;
 		public static final int monochrome = 0x7f06002b;
 		public static final int never = 0x7f060009;
@@ -565,11 +565,11 @@ public final class R {
 		public static final int cast_activity = 0x7f03001c;
 		public static final int custom_media_route_controller_controls_dialog = 0x7f03001d;
 		public static final int custom_notification = 0x7f03001e;
-		public static final int mini_controller = 0x7f030023;
-		public static final int mr_media_route_chooser_dialog = 0x7f030024;
-		public static final int mr_media_route_controller_dialog = 0x7f030025;
-		public static final int mr_media_route_list_item = 0x7f030026;
-		public static final int support_simple_spinner_dropdown_item = 0x7f03002a;
+		public static final int mini_controller = 0x7f030025;
+		public static final int mr_media_route_chooser_dialog = 0x7f030026;
+		public static final int mr_media_route_controller_dialog = 0x7f030027;
+		public static final int mr_media_route_list_item = 0x7f030028;
+		public static final int support_simple_spinner_dropdown_item = 0x7f03002c;
 	}
 	public static final class menu {
 		public static final int cast_player_menu = 0x7f0e0001;

@@ -4,5 +4,5 @@ import java.util.ArrayList;
 
 public class Season {
 	public Integer number;
-	public ArrayList<Episode> episode;
+	public ArrayList<EpisodeItem> episode;
 }

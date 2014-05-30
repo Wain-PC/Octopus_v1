@@ -5,6 +5,7 @@
     <string name="action_settings">Настройки</string>
     <string name="action_bookmarks">Закладки</string>
     <string name="action_history">История</string>
+    <string name="action_claim">Пожаловаться</string>
     <string name="action_purge_history">Очистить историю</string>
     <string name="action_purge_bookmarks">Удалить все закладки</string>
     <string name="title_latest">Последние добавленные</string>
@@ -16,7 +17,8 @@
     <string name="title_series_episodes">Эпизоды</string>
     <string name="action_search">Поиск</string>
     <string name="search_hint">Введите название сериала</string>
-    <string name="loading">Загрузка</string>
+    <string name="operation_loading">Загрузка</string>
+    <string name="operation_sending">Отправка</string>
     
     
     <!-- Dialogs -->
@@ -27,9 +29,19 @@
     <string name="dialog_purge_bookmarks_header">Очистить список закладок?</string>
     <string name="dialog_purge_bookmarks_title">Все закладки будут удалены!</string>
     
+    <string name="dialog_series_videolist_title">Выберите источник видео</string>
+    <string name="dialog_series_videolist_vk">Вконтакте (MP4)</string>
+    <string name="dialog_series_videolist_hls">Moonwalk (HLS)</string>
+    
+    <string name="dialog_series_claim_title">Опишите ошибку в контенте</string>
+    <string name="dialog_series_claim_hint">Например: видео недоступно или не соответствует сериалу,
+        сериал неверно распознан и т.д.</string>
+    <string name="dialog_series_claim_send">Отправить</string>
+    
     <!-- Toasts -->
     <string name="toast_bookmarks_added">Сериал добавлен в закладки</string>
     <string name="toast_bookmarks_removed">Сериал удален из закладок</string>
+    
     
     <!-- Preferences -->
     <string name="pref_category">Основные</string>

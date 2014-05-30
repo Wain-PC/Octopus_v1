@@ -1,8 +1,15 @@
 package com.wainpc.octopus.core.models;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class EpisodeItem extends HashMap<String, String> {
+	
+	public ArrayList<Video> video;
+	
+	public EpisodeItem() {
+		video = new ArrayList<Video>();
+	}
 
 	public String getSeasonNumber() {
 		String sn = this.get("seasonNumber");
